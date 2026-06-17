@@ -1,0 +1,702 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Summit Premier 2026 — Simulação de Custos</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:#f5f5f3;color:#1a1a18;min-height:100vh;padding:0 0 3rem}
+.container{max-width:900px;margin:0 auto;padding:0 1.25rem}
+.top-bar{display:flex;justify-content:space-between;align-items:flex-start;padding:1.5rem 0 1rem;border-bottom:0.5px solid rgba(0,0,0,0.12);margin-bottom:1.25rem}
+.top-bar h1{font-size:18px;font-weight:600;color:#1a1a18;letter-spacing:-0.02em}
+.top-bar .sub{font-size:12px;color:#6b6b67;margin-top:3px}
+.lang-btn{display:flex;gap:4px;flex-shrink:0;margin-left:1rem}
+.lang-btn button{font-size:12px;padding:5px 12px;border:0.5px solid rgba(0,0,0,0.2);border-radius:8px;background:transparent;cursor:pointer;color:#6b6b67;font-family:inherit}
+.lang-btn button.active{background:#fff;color:#1a1a18;font-weight:500;border-color:rgba(0,0,0,0.3);box-shadow:0 1px 3px rgba(0,0,0,0.08)}
+.inputs-bar{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:8px;margin-bottom:1.25rem}
+.inp-card{background:#fff;border-radius:10px;padding:10px 12px;border:0.5px solid rgba(0,0,0,0.1)}
+.inp-card label{display:block;font-size:11px;color:#6b6b67;margin-bottom:5px;font-weight:400}
+.inp-card input{width:100%;font-size:15px;font-weight:600;background:transparent;border:none;color:#1a1a18;outline:none;border-bottom:1px solid rgba(0,0,0,0.15);padding:2px 0;font-family:inherit}
+.inp-card input:focus{border-bottom-color:#185FA5}
+.scenarios-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:1.25rem}
+.sc-card{background:#fff;border:0.5px solid rgba(0,0,0,0.1);border-radius:12px;padding:14px;cursor:pointer;transition:box-shadow 0.15s,border-color 0.15s}
+.sc-card:hover{box-shadow:0 2px 8px rgba(0,0,0,0.08)}
+.sc-card.active{border:2px solid #185FA5;box-shadow:0 2px 12px rgba(24,95,165,0.12)}
+.sc-tag{font-size:10px;font-weight:600;padding:2px 8px;border-radius:6px;display:inline-block;margin-bottom:8px;letter-spacing:0.03em;text-transform:uppercase}
+.tag-1{background:#E6F1FB;color:#0C447C}
+.tag-2{background:#EAF3DE;color:#3B6D11}
+.tag-3{background:#FAEEDA;color:#633806}
+.sc-name{font-size:13px;font-weight:500;color:#1a1a18;margin-bottom:10px}
+.sc-total-brl{font-size:22px;font-weight:600;color:#1a1a18;line-height:1;letter-spacing:-0.02em}
+.sc-total-usd{font-size:12px;color:#6b6b67;margin-top:4px}
+.sc-meta{font-size:11px;color:#6b6b67;margin-top:8px;padding-top:8px;border-top:0.5px solid rgba(0,0,0,0.1);line-height:1.6}
+.sc-meta span{color:#1a1a18;font-weight:500}
+.see-detail{font-size:11px;color:#185FA5;margin-top:10px;cursor:pointer;background:none;border:none;padding:0;font-family:inherit}
+.chart-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:1.25rem}
+.chart-box{background:#fff;border:0.5px solid rgba(0,0,0,0.1);border-radius:12px;padding:14px}
+.chart-box h3{font-size:11px;color:#6b6b67;margin-bottom:10px;font-weight:400;text-transform:uppercase;letter-spacing:0.05em}
+.legend-row{display:flex;gap:14px;margin-top:8px;font-size:11px;color:#6b6b67;flex-wrap:wrap}
+.legend-dot{width:10px;height:10px;border-radius:2px;display:inline-block;margin-right:4px;vertical-align:middle}
+.detail-panel{background:#fff;border:0.5px solid rgba(0,0,0,0.1);border-radius:12px;padding:16px;display:none}
+.detail-panel.open{display:block}
+.detail-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}
+.detail-header h2{font-size:14px;font-weight:600;color:#1a1a18}
+.close-btn{font-size:12px;color:#6b6b67;cursor:pointer;border:0.5px solid rgba(0,0,0,0.15);background:#f5f5f3;padding:4px 10px;border-radius:6px;font-family:inherit}
+.det-table{width:100%;border-collapse:collapse;font-size:12px}
+.det-table th{text-align:left;color:#6b6b67;padding:6px 8px;border-bottom:0.5px solid rgba(0,0,0,0.1);font-weight:400;font-size:11px;text-transform:uppercase;letter-spacing:0.04em}
+.det-table th.num{text-align:right}
+.det-table td{padding:5px 8px;color:#1a1a18;border-bottom:0.5px solid rgba(0,0,0,0.06)}
+.det-table td.num{text-align:right}
+.det-table tr.cat-row td{font-weight:600;font-size:10px;color:#6b6b67;background:#f5f5f3;text-transform:uppercase;letter-spacing:0.05em;padding:5px 8px}
+.det-table tr.sub-row td{background:#fafaf8;font-weight:500;font-size:11px;color:#888}
+.det-table input.cell-edit{width:100%;text-align:right;background:transparent;border:none;font-size:12px;color:#1a1a18;outline:none;border-bottom:0.5px solid transparent;font-family:inherit}
+.det-table input.cell-edit:focus{border-bottom:0.5px solid #185FA5}
+.summary-bar{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:14px}
+.sum-card{background:#f5f5f3;border-radius:8px;padding:10px 12px}
+.sum-card .lbl{font-size:10px;color:#6b6b67;margin-bottom:4px;text-transform:uppercase;letter-spacing:0.04em}
+.sum-card .val{font-size:15px;font-weight:600;color:#1a1a18}
+.sum-card .val.pos{color:#3B6D11}
+.sum-card .val.neg{color:#A32D2D}
+@media(max-width:600px){
+  .scenarios-grid{grid-template-columns:1fr}
+  .chart-row{grid-template-columns:1fr}
+  .summary-bar{grid-template-columns:repeat(2,1fr)}
+  .inputs-bar{grid-template-columns:repeat(2,1fr)}
+}
+</style>
+</head>
+<body>
+<div class="container">
+
+<div class="top-bar">
+  <div>
+    <h1 id="t-title">Summit Premier 2026 — Simulação de Custos</h1>
+    <div class="sub" id="t-sub">Campos editáveis · Atualização em tempo real · Dados: GLN 20/05/2026</div>
+  </div>
+  <div class="lang-btn">
+    <button class="active" onclick="setLang('pt',this)">PT</button>
+    <button onclick="setLang('en',this)">EN</button>
+  </div>
+</div>
+
+<div class="inputs-bar">
+  <div class="inp-card">
+    <label id="t-part">Nº de participantes</label>
+    <input type="number" id="inp-part" value="8000" min="1" oninput="recalc()">
+  </div>
+  <div class="inp-card">
+    <label id="t-cambio">Câmbio (R$/USD)</label>
+    <input type="number" id="inp-cambio" value="5.10" step="0.01" min="1" oninput="recalc()">
+  </div>
+  <div class="inp-card">
+    <label id="t-ticket1">Ticket Cenário 1 (R$)</label>
+    <input type="number" id="inp-t1" value="139" step="1" min="0" oninput="recalc()">
+  </div>
+  <div class="inp-card">
+    <label id="t-ticket2">Ticket Cenário 2 (R$)</label>
+    <input type="number" id="inp-t2" value="90" step="1" min="0" oninput="recalc()">
+  </div>
+  <div class="inp-card">
+    <label id="t-ticket3">Ticket Cenário 3 (R$)</label>
+    <input type="number" id="inp-t3" value="139" step="1" min="0" oninput="recalc()">
+  </div>
+  <div class="inp-card">
+    <label id="t-sub-gln">Subsídio GLN (R$)</label>
+    <input type="number" id="inp-gln" value="0" step="1000" min="0" oninput="recalc()">
+  </div>
+</div>
+
+<div class="scenarios-grid">
+  <div class="sc-card active" id="card-0" onclick="openDetail(0)">
+    <div class="sc-tag tag-1" id="t-tag1">Cenário 1</div>
+    <div class="sc-name" id="t-n1">Atual</div>
+    <div class="sc-total-brl" id="sc-brl-0">R$ 569.220</div>
+    <div class="sc-total-usd" id="sc-usd-0">USD 111.612</div>
+    <div class="sc-meta">
+      <span id="t-unit">Custo unit.:</span> <span id="sc-unit-0">R$ 71,15</span><br>
+      <span id="t-tick">Ticket:</span> <span id="sc-tick-0">R$ 139</span><br>
+      <span id="t-liq">Lucro liq./part.:</span> <span id="sc-liq-0" style="color:#3B6D11">R$ 67,85</span>
+    </div>
+    <button class="see-detail" id="t-see">Ver detalhes →</button>
+  </div>
+  <div class="sc-card" id="card-1" onclick="openDetail(1)">
+    <div class="sc-tag tag-2" id="t-tag2">Cenário 2</div>
+    <div class="sc-name" id="t-n2">Redução de custos</div>
+    <div class="sc-total-brl" id="sc-brl-1">R$ 421.200</div>
+    <div class="sc-total-usd" id="sc-usd-1">USD 82.588</div>
+    <div class="sc-meta">
+      <span>Custo unit.:</span> <span id="sc-unit-1">R$ 52,65</span><br>
+      <span>Ticket:</span> <span id="sc-tick-1">R$ 90</span><br>
+      <span>Lucro liq./part.:</span> <span id="sc-liq-1" style="color:#3B6D11">R$ 37,35</span>
+    </div>
+    <button class="see-detail">Ver detalhes →</button>
+  </div>
+  <div class="sc-card" id="card-2" onclick="openDetail(2)">
+    <div class="sc-tag tag-3" id="t-tag3">Cenário 3</div>
+    <div class="sc-name" id="t-n3">Digital</div>
+    <div class="sc-total-brl" id="sc-brl-2">R$ 293.682</div>
+    <div class="sc-total-usd" id="sc-usd-2">USD 57.585</div>
+    <div class="sc-meta">
+      <span>Custo unit.:</span> <span id="sc-unit-2">R$ 36,71</span><br>
+      <span>Ticket:</span> <span id="sc-tick-2">R$ 139</span><br>
+      <span>Lucro liq./part.:</span> <span id="sc-liq-2" style="color:#3B6D11">R$ 102,29</span>
+    </div>
+    <button class="see-detail">Ver detalhes →</button>
+  </div>
+</div>
+
+<div class="chart-row">
+  <div class="chart-box">
+    <h3 id="t-chart1">Custo total por cenário (R$)</h3>
+    <div style="position:relative;height:200px">
+      <canvas id="barChart" role="img" aria-label="Gráfico de barras com custo total dos 3 cenários em reais">Cenário 1: R$569.220, Cenário 2: R$421.200, Cenário 3: R$293.682</canvas>
+    </div>
+    <div class="legend-row">
+      <span><span class="legend-dot" style="background:#185FA5"></span><span id="t-leg1">Cenário 1</span></span>
+      <span><span class="legend-dot" style="background:#3B6D11"></span><span id="t-leg2">Cenário 2</span></span>
+      <span><span class="legend-dot" style="background:#BA7517"></span><span id="t-leg3">Cenário 3</span></span>
+    </div>
+  </div>
+  <div class="chart-box">
+    <h3 id="t-chart2">Lucro líquido total (R$)</h3>
+    <div style="position:relative;height:200px">
+      <canvas id="profitChart" role="img" aria-label="Gráfico de barras com lucro líquido total dos 3 cenários">Cenário 1, Cenário 2, Cenário 3</canvas>
+    </div>
+  </div>
+</div>
+
+<div class="detail-panel" id="detail-panel">
+  <div class="detail-header">
+    <h2 id="detail-title">Detalhamento — Cenário 1</h2>
+    <button class="close-btn" onclick="closeDetail()" id="t-close">✕ Fechar</button>
+  </div>
+  <table class="det-table">
+    <thead><tr>
+      <th id="t-dh1">Item</th>
+      <th id="t-dh2">Executor</th>
+      <th class="num" id="t-dh3">Total (R$)</th>
+      <th class="num" id="t-dh4">Unit. (R$)</th>
+    </tr></thead>
+    <tbody id="detail-tbody"></tbody>
+  </table>
+  <div class="summary-bar" id="detail-summary"></div>
+</div>
+
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<script>
+var lang='pt';
+var currentScene=0;
+
+var i18n={
+  pt:{
+    title:'Summit Premier 2026 — Simulação de Custos',
+    sub:'Campos editáveis · Atualização em tempo real · Dados: GLN 20/05/2026',
+    part:'Nº de participantes',cambio:'Câmbio (R$/USD)',
+    ticket1:'Ticket Cenário 1 (R$)',ticket2:'Ticket Cenário 2 (R$)',ticket3:'Ticket Cenário 3 (R$)',
+    subgln:'Subsídio GLN (R$)',
+    tag1:'Cenário 1',tag2:'Cenário 2',tag3:'Cenário 3',
+    n1:'Atual',n2:'Redução de custos',n3:'Digital',
+    unit:'Custo unit.:',tick:'Ticket:',liq:'Lucro liq./part.:',
+    see:'Ver detalhes →',chart1:'Custo total por cenário (R$)',chart2:'Lucro líquido total (R$)',
+    close:'✕ Fechar',leg1:'Cenário 1',leg2:'Cenário 2',leg3:'Cenário 3',
+    dh1:'Item',dh2:'Executor',dh3:'Total (R$)',dh4:'Unit. (R$)',
+    detpre:'Detalhamento — ',
+    slbl:['Custo total','Custo unit.','Ticket','Lucro liq./part.'],
+    cats:['Viagem Chicago','Nacionalização','Criação de Materiais','Impressão de Materiais','Marketing e Vendas','Relacionamento / Implementação','Custos Administrativos'],
+    subtotal:'Subtotal'
+  },
+  en:{
+    title:'Summit Premier 2026 — Cost Simulation',
+    sub:'Editable fields · Live recalculation · Data: GLN 05/20/2026',
+    part:'No. of participants',cambio:'Exchange rate (BRL/USD)',
+    ticket1:'Ticket Scenario 1 (BRL)',ticket2:'Ticket Scenario 2 (BRL)',ticket3:'Ticket Scenario 3 (BRL)',
+    subgln:'GLN Subsidy (BRL)',
+    tag1:'Scenario 1',tag2:'Scenario 2',tag3:'Scenario 3',
+    n1:'Current',n2:'Cost reduction',n3:'Digital',
+    unit:'Unit cost:',tick:'Ticket:',liq:'Net profit/part.:',
+    see:'See details →',chart1:'Total cost by scenario (BRL)',chart2:'Net profit total (BRL)',
+    close:'✕ Close',leg1:'Scenario 1',leg2:'Scenario 2',leg3:'Scenario 3',
+    dh1:'Item',dh2:'Executor',dh3:'Total (BRL)',dh4:'Unit. (BRL)',
+    detpre:'Breakdown — ',
+    slbl:['Total cost','Unit cost','Ticket','Net profit/part.'],
+    cats:['Chicago Trip','Nationalization','Materials Creation','Materials Printing','Marketing & Sales','Relationship / Implementation','Administrative Costs'],
+    subtotal:'Subtotal'
+  }
+};
+
+var baseData=[
+  {cats:[
+    {items:[['Passagem, Hospedagem e Alimentação p/ 04 Pessoas','Fornecedor',40000]],total:40000},
+    {items:[
+      ['Coordenação da Nacionalização','Cadu',4103],
+      ['Tradução e Dublagem (15 palestras)','DPN Santos',117622.8],
+      ['Revisão de Estilo','Cadu',3419.17],
+      ['Tradução Palestras: Adaptação e Legenda','DPN Santos',9720],
+      ['Tradução e Aplicação dos Slides','Cadu',1709.58],
+      ['Motion Graphics','Cadu',3000],
+      ['Masterização','Cadu',854.79],
+      ['Revisão Geral','Cadu',1282.19],
+      ['Entrega Final das Mídias','Cadu',1709.58],
+    ]},
+    {items:[
+      ['Guia de Identidade','Paulo',147.81],
+      ['Caderno Participante Impresso (Coord.)','Vinicius',7674.60],
+      ['Caderno Participante Impresso (Designer)','Paulo',4434.18],
+      ['Caderno Participante Impresso (Revisor)','Mayana',321.13],
+      ['Caderno Participante Digital','Paulo',369.52],
+      ['Fotos preletores','Paulo',147.81],
+      ['Modelo Crachá','Paulo',147.81],
+      ['Sites dos Parceiros','Paulo',147.81],
+      ['Posts Instagram','Paulo',184.76],
+      ['Stories','Paulo',147.81],
+      ['Press Release','Paulo',147.81],
+      ['Flyer','Paulo',147.81],
+      ['Folder','Paulo',147.81],
+      ['Cabeçalho Email','Paulo',147.81],
+      ['Bio dos Palestrantes','Paulo',147.81],
+      ['Guia do Summit Experience','Paulo',184.76],
+      ['Kit Identidade','Paulo',147.81],
+      ['Vídeos MKT (Invites, Promo)','Lucas Barbosa',557.49],
+      ['Vídeos MKT (Cortes)','Lucas Barbosa',253.41],
+      ['Backdrop Summit','Paulo',147.81],
+      ['Background','Paulo',73.90],
+      ['Banner Vertical','Paulo',147.81],
+      ['Sinalização Summit','Paulo',147.81],
+      ['Projeto Guia do Facilitador','Sara Macedo',10640],
+      ['Roteirização Treinamento Voluntários','Aline/Cadu/Vinicius',4625.68],
+      ['Gravação Treinamento Voluntários','Aline/Cadu/Vinicius',770.95],
+      ['Edição Treinamento Voluntários','Lucas Barbosa',304.09],
+    ]},
+    {items:[
+      ['Caderno do Participante','Gráfica Reproset',40956.12],
+      ['Crachá','AtualCard',12213.98],
+      ['Caneta','Fissare Brindes',10000],
+    ]},
+    {items:[
+      ['Coordenação Marketing Digital','Vini',6139.68],
+      ['Equipe de Vendas','Juan',23845.54],
+      ['SDR','IA',12000],
+      ['Anúncios em Vídeos','Lucas Barbosa',7298.11],
+      ['Configurações de Campanha','Lucas Barbosa',1039.26],
+      ['Tráfego Pago','Meta Business',12000],
+    ]},
+    {items:[
+      ['Coordenação do Relacionamento / CS','Aline',7837.76],
+      ['Jornada do Parceiro c/ Assessoria (Andréa)','Andréa',3931.42],
+      ['Jornada do Parceiro c/ Assessoria (Nicoly)','Nicoly',15659.35],
+      ['Suporte aos Eventos','Sara',733.56],
+      ['Viagens e Visitas aos Summits','Eq. Envisionar',50000],
+      ['Gestão dos Summits Segmentados','Aline',2165.13],
+    ]},
+    {items:[
+      ['Softwares e serviços digitais','-',12900],
+      ['Fretes (Correios e Transportadoras)','-',22000],
+      ['Estoque','-',10500],
+      ['Aluguel Proporcional Escritório','-',32160],
+      ['Taxas bancárias','-',3000],
+      ['Régua de Cobrança','Carol',1013.63],
+      ['Impostos','-',65941.60],
+      ['Subsídio GLN (Imposto)','-',0],
+    ]},
+  ]},
+  {cats:[
+    {items:[['Passagem, Hospedagem e Alimentação p/ 03 Pessoas','Fornecedor',30000]]},
+    {items:[
+      ['Coordenação da Nacionalização','Cadu',4103],
+      ['Tradução, Dublagem e Legenda (12 palestras)','AudioNews',58500],
+      ['Revisão de Estilo','Cadu',3419.17],
+      ['Tradução Palestras: Adaptação e Legenda','AudioNews',0],
+      ['Tradução e Aplicação dos Slides','Lucas B.',506.81],
+      ['Motion Graphics','-',0],
+      ['Masterização','Lucas B.',253.41],
+      ['Revisão Geral','Cadu',1282.19],
+      ['Entrega Final das Mídias','Cadu',1709.58],
+    ]},
+    {items:[
+      ['Guia de Identidade','Paulo',147.81],
+      ['Caderno Participante Impresso (Coord.)','Vinicius',7674.60],
+      ['Caderno Participante Impresso (Designer)','Paulo',4434.18],
+      ['Caderno Participante Impresso (Revisor)','Mayana',321.13],
+      ['Caderno Participante Digital','Paulo',369.52],
+      ['Fotos preletores','Paulo',147.81],
+      ['Modelo/Tradução Crachá','Paulo',147.81],
+      ['Sites dos Parceiros','Paulo',147.81],
+      ['Posts Instagram','Paulo',184.76],
+      ['Stories','Paulo',147.81],
+      ['Press Release','Paulo',147.81],
+      ['Flyer','Paulo',147.81],
+      ['Folder','Paulo',147.81],
+      ['Cabeçalho Email','Paulo',147.81],
+      ['Bio dos Palestrantes','Paulo',147.81],
+      ['Guia do Summit Experience','Paulo',184.76],
+      ['Kit Identidade','Paulo',147.81],
+      ['Vídeos MKT (Invites, Promo)','Lucas Barbosa',557.49],
+      ['Vídeos MKT (Cortes)','Lucas Barbosa',253.41],
+      ['Backdrop Summit','Paulo',147.81],
+      ['Background','Paulo',73.90],
+      ['Banner Vertical','Paulo',147.81],
+      ['Sinalização Summit','Paulo',147.81],
+      ['Tradução Guia do Facilitador','IA + Humano',3000],
+      ['Roteirização Treinamento Voluntários','Aline/Cadu/Vinicius',4625.68],
+      ['Gravação Treinamento Voluntários','Aline/Cadu/Vinicius',770.95],
+      ['Edição Treinamento Voluntários','Lucas Barbosa',304.09],
+    ]},
+    {items:[
+      ['Caderno do Participante (02 Cores)','Gráfica Reproset',28669.28],
+      ['Crachá','AtualCard',12213.98],
+      ['Caneta','Fissare Brindes',10000],
+    ]},
+    {items:[
+      ['Coordenação Marketing Digital','Vini',6139.68],
+      ['Equipe de Vendas','Juan',23845.54],
+      ['SDR','IA',12000],
+      ['Anúncios em Vídeos','Lucas Barbosa',7298.11],
+      ['Configurações de Campanha','Lucas Barbosa',1039.26],
+      ['Tráfego Pago','Meta Business',12000],
+      ['Desenvolvimento de ChatBot','Terceirizado',10000],
+      ['Novo Vendedor','Novo Vendedor',15131.64],
+    ]},
+    {items:[
+      ['Coordenação do Relacionamento / CS','Aline',3918.88],
+      ['Jornada do Parceiro c/ Assessoria (Andréa)','Andréa',8297.25],
+      ['Jornada do Parceiro c/ Assessoria (Nicoly)','Nicoly',7829.68],
+      ['Suporte aos Eventos','Sara',366.78],
+      ['Viagens e Visitas aos Summits','Eq. Envisionar',12500],
+      ['Gestão dos Summits Segmentados','Aline',1082.56],
+    ]},
+    {items:[
+      ['Softwares e serviços digitais','-',12900],
+      ['Fretes (Correios e Transportadoras)','-',22000],
+      ['Estoque','-',10500],
+      ['Aluguel Proporcional Escritório','-',32160],
+      ['Taxas bancárias','-',3000],
+      ['Régua de Cobrança','Carol',1013.63],
+      ['Impostos','-',42696],
+      ['Subsídio GLN (Imposto)','-',0],
+    ]},
+  ]},
+  {cats:[
+    {items:[['Passagem, Hospedagem e Alimentação p/ 02 Pessoas','Fornecedor',20000]]},
+    {items:[
+      ['Coordenação da Nacionalização','Cadu',4103],
+      ['Tradução, Dublagem e Legenda (09 palestras)','AudioNews',45000],
+      ['Revisão de Estilo','Cadu',3419.17],
+      ['Tradução Palestras: Adaptação e Legenda','AudioNews',0],
+      ['Tradução e Aplicação dos Slides','Lucas B.',506.81],
+      ['Motion Graphics','-',0],
+      ['Masterização','Lucas B.',253.41],
+      ['Revisão Geral','Cadu',1282.19],
+      ['Entrega Final das Mídias','Cadu',1709.58],
+    ]},
+    {items:[
+      ['Guia de Identidade','Paulo',147.81],
+      ['Caderno Participante Impresso (Coord.)','Vinicius',7674.60],
+      ['Caderno Participante Impresso (Designer)','Paulo',4434.18],
+      ['Caderno Participante Impresso (Revisor)','Mayana',321.13],
+      ['Caderno Participante Digital (Digital)','Paulo',0],
+      ['Fotos preletores','Paulo',147.81],
+      ['Modelo/Tradução Crachá','Paulo',147.81],
+      ['Sites dos Parceiros','Paulo',147.81],
+      ['Posts Instagram','Paulo',184.76],
+      ['Stories','Paulo',147.81],
+      ['Press Release','Paulo',147.81],
+      ['Flyer','Paulo',147.81],
+      ['Folder','Paulo',147.81],
+      ['Cabeçalho Email','Paulo',147.81],
+      ['Bio dos Palestrantes','Paulo',147.81],
+      ['Guia do Summit Experience','Paulo',184.76],
+      ['Kit Identidade','Paulo',147.81],
+      ['Vídeos MKT (Invites, Promo)','Lucas Barbosa',557.49],
+      ['Vídeos MKT (Cortes)','Lucas Barbosa',253.41],
+      ['Backdrop Summit','Paulo',147.81],
+      ['Background','Paulo',73.90],
+      ['Banner Vertical','Paulo',147.81],
+      ['Sinalização Summit','Paulo',147.81],
+      ['Tradução Guia do Facilitador','IA + Humano',3000],
+      ['Roteirização Treinamento Voluntários','Aline/Cadu/Vinicius',4625.68],
+      ['Gravação Treinamento Voluntários','Aline/Cadu/Vinicius',770.95],
+      ['Edição Treinamento Voluntários','Lucas Barbosa',304.09],
+    ]},
+    {items:[
+      ['Caderno do Participante (Digital)','-',0],
+      ['Crachá (fornecimento modelo)','Atua Card',0],
+      ['Caneta','Fissare Brindes',0],
+    ]},
+    {items:[
+      ['Coordenação Marketing Digital','Vini',6139.68],
+      ['Equipe de Vendas','-',0],
+      ['SDR','IA',12000],
+      ['Anúncios em Vídeos','Lucas Barbosa',7298.11],
+      ['Configurações de Campanha','Lucas Barbosa',1039.26],
+      ['Tráfego Pago','Meta Business',12000],
+      ['Desenvolvimento de ChatBot','Terceirizado',10000],
+      ['Novo Vendedor','Novo Vendedor',15131.64],
+    ]},
+    {items:[
+      ['Coordenação do Relacionamento / CS','Aline',2612.59],
+      ['Jornada do Parceiro c/ Assessoria (Andréa)','Andréa',5531.50],
+      ['Jornada do Parceiro c/ Assessoria (Nicoly)','Nicoly',5219.78],
+      ['Suporte aos Eventos','Sara',244.52],
+      ['Viagens e Visitas aos Summits','Eq. Envisionar',0],
+      ['Gestão dos Summits Segmentados','Aline',721.71],
+    ]},
+    {items:[
+      ['Softwares e serviços digitais','-',12900],
+      ['Fretes (Correios e Transportadoras)','-',0],
+      ['Estoque','-',0],
+      ['Aluguel Proporcional Escritório','-',32160],
+      ['Taxas bancárias','-',3000],
+      ['Régua de Cobrança','Carol',1013.63],
+      ['Impostos','-',65941.60],
+      ['Subsídio GLN (Imposto)','-',0],
+    ]},
+  ]}
+];
+
+var editableData=JSON.parse(JSON.stringify(baseData));
+var barChart,profitChart;
+
+function fmtBRL(v){return 'R$ '+Math.round(v).toLocaleString('pt-BR')}
+function fmtUSD(v){return 'USD '+Math.round(v).toLocaleString('pt-BR')}
+function fmtUnit(v){return 'R$ '+v.toFixed(2).replace('.',',')}
+
+function getTotal(s){
+  return editableData[s].cats.reduce(function(acc,cat){
+    return acc+cat.items.reduce(function(a,it){return a+it[2]},0);
+  },0);
+}
+
+function recalc(){
+  var part=parseFloat(document.getElementById('inp-part').value)||8000;
+  var cambio=parseFloat(document.getElementById('inp-cambio').value)||5.10;
+  var tickets=[
+    parseFloat(document.getElementById('inp-t1').value)||139,
+    parseFloat(document.getElementById('inp-t2').value)||90,
+    parseFloat(document.getElementById('inp-t3').value)||139
+  ];
+  var gln=parseFloat(document.getElementById('inp-gln').value)||0;
+  var totals=[getTotal(0),getTotal(1),getTotal(2)];
+  var totalsAdj=totals.map(function(t){return Math.max(0,t-gln)});
+
+  for(var i=0;i<3;i++){
+    var brl=totalsAdj[i];
+    var usd=brl/cambio;
+    var unit=brl/part;
+    var liq=tickets[i]-unit;
+    document.getElementById('sc-brl-'+i).textContent=fmtBRL(brl);
+    document.getElementById('sc-usd-'+i).textContent=fmtUSD(usd);
+    document.getElementById('sc-unit-'+i).textContent=fmtUnit(unit);
+    document.getElementById('sc-tick-'+i).textContent='R$ '+tickets[i];
+    var liqEl=document.getElementById('sc-liq-'+i);
+    liqEl.textContent=fmtUnit(liq);
+    liqEl.style.color=liq>=0?'#3B6D11':'#A32D2D';
+  }
+
+  updateCharts(totalsAdj,tickets,part);
+  if(document.getElementById('detail-panel').classList.contains('open')){
+    renderDetail(currentScene);
+  }
+}
+
+function updateCharts(totals,tickets,part){
+  var labels=lang==='pt'?['Cenário 1','Cenário 2','Cenário 3']:['Scenario 1','Scenario 2','Scenario 3'];
+  var profits=totals.map(function(t,i){return (tickets[i]-t/part)*part});
+  if(barChart){
+    barChart.data.labels=labels;
+    barChart.data.datasets[0].data=totals.map(function(v){return Math.round(v)});
+    barChart.update();
+  }
+  if(profitChart){
+    profitChart.data.labels=labels;
+    profitChart.data.datasets[0].data=profits.map(function(v){return Math.round(v)});
+    profitChart.data.datasets[0].backgroundColor=profits.map(function(v){return v>=0?'rgba(59,109,17,0.75)':'rgba(163,45,45,0.75)'});
+    profitChart.update();
+  }
+}
+
+function initCharts(){
+  var part=8000,tickets=[139,90,139];
+  var totals=[getTotal(0),getTotal(1),getTotal(2)];
+  var labels=['Cenário 1','Cenário 2','Cenário 3'];
+  var profits=totals.map(function(t,i){return (tickets[i]-t/part)*part});
+
+  barChart=new Chart(document.getElementById('barChart'),{
+    type:'bar',
+    data:{labels:labels,datasets:[{
+      label:'Total (R$)',
+      data:totals.map(function(v){return Math.round(v)}),
+      backgroundColor:['rgba(24,95,165,0.75)','rgba(59,109,17,0.75)','rgba(186,117,23,0.75)'],
+      borderWidth:0,borderRadius:4
+    }]},
+    options:{responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{display:false},tooltip:{callbacks:{label:function(c){return 'R$ '+c.parsed.y.toLocaleString('pt-BR')}}}},
+      scales:{y:{ticks:{callback:function(v){return 'R$ '+Math.round(v/1000)+'k'}},grid:{color:'rgba(0,0,0,0.05)'}},x:{grid:{display:false}}}}
+  });
+
+  profitChart=new Chart(document.getElementById('profitChart'),{
+    type:'bar',
+    data:{labels:labels,datasets:[{
+      label:'Lucro (R$)',
+      data:profits.map(function(v){return Math.round(v)}),
+      backgroundColor:profits.map(function(v){return v>=0?'rgba(59,109,17,0.75)':'rgba(163,45,45,0.75)'}),
+      borderWidth:0,borderRadius:4
+    }]},
+    options:{responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{display:false},tooltip:{callbacks:{label:function(c){return 'R$ '+c.parsed.y.toLocaleString('pt-BR')}}}},
+      scales:{y:{ticks:{callback:function(v){return 'R$ '+Math.round(v/1000)+'k'}},grid:{color:'rgba(0,0,0,0.05)'}},x:{grid:{display:false}}}}
+  });
+}
+
+function openDetail(s){
+  currentScene=s;
+  [0,1,2].forEach(function(i){
+    document.getElementById('card-'+i).classList.toggle('active',i===s);
+  });
+  var t=i18n[lang];
+  var names=[t.n1,t.n2,t.n3];
+  var tags=[t.tag1,t.tag2,t.tag3];
+  document.getElementById('detail-title').textContent=t.detpre+tags[s]+' — '+names[s];
+  document.getElementById('detail-panel').classList.add('open');
+  renderDetail(s);
+  document.getElementById('detail-panel').scrollIntoView({behavior:'smooth',block:'nearest'});
+}
+
+function closeDetail(){
+  document.getElementById('detail-panel').classList.remove('open');
+}
+
+function renderDetail(s){
+  var part=parseFloat(document.getElementById('inp-part').value)||8000;
+  var t=i18n[lang];
+  var tbody=document.getElementById('detail-tbody');
+  tbody.innerHTML='';
+  var scData=editableData[s];
+  var grandTotal=0;
+
+  scData.cats.forEach(function(cat,ci){
+    var catRow=document.createElement('tr');
+    catRow.className='cat-row';
+    catRow.innerHTML='<td colspan="4">'+t.cats[ci]+'</td>';
+    tbody.appendChild(catRow);
+
+    cat.items.forEach(function(it,ii){
+      grandTotal+=it[2];
+      var tr=document.createElement('tr');
+      var inp=document.createElement('input');
+      inp.type='number';
+      inp.className='cell-edit';
+      inp.value=it[2].toFixed(2);
+      inp.min=0;
+      inp.step=0.01;
+      (function(ci2,ii2,el){
+        el.addEventListener('input',function(){
+          editableData[s].cats[ci2].items[ii2][2]=parseFloat(el.value)||0;
+          recalc();
+        });
+      })(ci,ii,inp);
+      var tdInp=document.createElement('td');
+      tdInp.className='num';
+      tdInp.appendChild(inp);
+      tr.innerHTML='<td>'+it[0]+'</td><td style="color:#888;font-size:11px">'+it[1]+'</td>';
+      tr.appendChild(tdInp);
+      var tdUnit=document.createElement('td');
+      tdUnit.className='num';
+      tdUnit.style.color='#aaa';
+      tdUnit.style.fontSize='11px';
+      tdUnit.textContent=(it[2]/part).toFixed(4).replace('.',',');
+      tr.appendChild(tdUnit);
+      tbody.appendChild(tr);
+    });
+
+    var subTotal=cat.items.reduce(function(a,i){return a+i[2]},0);
+    var subRow=document.createElement('tr');
+    subRow.className='sub-row';
+    subRow.innerHTML='<td colspan="2" style="font-size:11px;color:#888;padding:4px 8px">'+t.subtotal+'</td><td class="num" style="font-size:11px;font-weight:600;color:#555;padding:4px 8px">R$ '+Math.round(subTotal).toLocaleString('pt-BR')+'</td><td></td>';
+    tbody.appendChild(subRow);
+  });
+
+  var tickets=[
+    parseFloat(document.getElementById('inp-t1').value)||139,
+    parseFloat(document.getElementById('inp-t2').value)||90,
+    parseFloat(document.getElementById('inp-t3').value)||139
+  ];
+  var gln=parseFloat(document.getElementById('inp-gln').value)||0;
+  var cambio=parseFloat(document.getElementById('inp-cambio').value)||5.10;
+  var totalAdj=Math.max(0,grandTotal-gln);
+  var unit=totalAdj/part;
+  var liq=tickets[s]-unit;
+
+  var sumEl=document.getElementById('detail-summary');
+  sumEl.innerHTML='';
+  var cards=[
+    {l:t.slbl[0],v:fmtBRL(totalAdj)},
+    {l:t.slbl[1],v:fmtUnit(unit)},
+    {l:t.slbl[2],v:'R$ '+tickets[s]},
+    {l:t.slbl[3],v:fmtUnit(liq),cls:liq>=0?'pos':'neg'}
+  ];
+  cards.forEach(function(c){
+    var d=document.createElement('div');
+    d.className='sum-card';
+    d.innerHTML='<div class="lbl">'+c.l+'</div><div class="val'+(c.cls?' '+c.cls:'')+'">'+c.v+'</div>';
+    sumEl.appendChild(d);
+  });
+}
+
+function setLang(l,btn){
+  lang=l;
+  document.querySelectorAll('.lang-btn button').forEach(function(b){b.classList.remove('active')});
+  btn.classList.add('active');
+  document.documentElement.lang=l==='pt'?'pt-BR':'en';
+  var t=i18n[l];
+  document.title=t.title;
+  document.getElementById('t-title').textContent=t.title;
+  document.getElementById('t-sub').textContent=t.sub;
+  document.getElementById('t-part').textContent=t.part;
+  document.getElementById('t-cambio').textContent=t.cambio;
+  document.getElementById('t-ticket1').textContent=t.ticket1;
+  document.getElementById('t-ticket2').textContent=t.ticket2;
+  document.getElementById('t-ticket3').textContent=t.ticket3;
+  document.getElementById('t-sub-gln').textContent=t.subgln;
+  document.getElementById('t-tag1').textContent=t.tag1;
+  document.getElementById('t-tag2').textContent=t.tag2;
+  document.getElementById('t-tag3').textContent=t.tag3;
+  document.getElementById('t-n1').textContent=t.n1;
+  document.getElementById('t-n2').textContent=t.n2;
+  document.getElementById('t-n3').textContent=t.n3;
+  document.getElementById('t-unit').textContent=t.unit;
+  document.getElementById('t-tick').textContent=t.tick;
+  document.getElementById('t-liq').textContent=t.liq;
+  document.getElementById('t-see').textContent=t.see;
+  document.getElementById('t-chart1').textContent=t.chart1;
+  document.getElementById('t-chart2').textContent=t.chart2;
+  document.getElementById('t-close').textContent=t.close;
+  document.getElementById('t-dh1').textContent=t.dh1;
+  document.getElementById('t-dh2').textContent=t.dh2;
+  document.getElementById('t-dh3').textContent=t.dh3;
+  document.getElementById('t-dh4').textContent=t.dh4;
+  document.getElementById('t-leg1').textContent=t.leg1;
+  document.getElementById('t-leg2').textContent=t.leg2;
+  document.getElementById('t-leg3').textContent=t.leg3;
+  var labels=l==='pt'?['Cenário 1','Cenário 2','Cenário 3']:['Scenario 1','Scenario 2','Scenario 3'];
+  if(barChart){barChart.data.labels=labels;barChart.update();}
+  if(profitChart){profitChart.data.labels=labels;profitChart.update();}
+  if(document.getElementById('detail-panel').classList.contains('open')){
+    var tags=[t.tag1,t.tag2,t.tag3];
+    var names=[t.n1,t.n2,t.n3];
+    document.getElementById('detail-title').textContent=t.detpre+tags[currentScene]+' — '+names[currentScene];
+    renderDetail(currentScene);
+  }
+}
+
+window.addEventListener('load',function(){
+  initCharts();
+  recalc();
+  openDetail(0);
+});
+</script>
+</body>
+</html>
