@@ -1,591 +1,1194 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt-BR" data-theme="light">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Summit Premier 2026 — Simulação de Custos</title>
+<title>Summit Premier 2026</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Sora:wght@400;600;700&display=swap" rel="stylesheet">
 <style>
-*{box-sizing:border-box;margin:0;padding:0}
-body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:#f5f5f3;color:#1a1a18;min-height:100vh;padding:0 0 3rem}
-.container{max-width:960px;margin:0 auto;padding:0 1.25rem}
-.top-bar{display:flex;justify-content:space-between;align-items:flex-start;padding:1.5rem 0 1rem;border-bottom:0.5px solid rgba(0,0,0,0.12);margin-bottom:1.25rem}
-.top-bar h1{font-size:18px;font-weight:600;color:#1a1a18;letter-spacing:-0.02em}
-.top-bar .sub{font-size:12px;color:#6b6b67;margin-top:3px}
-.lang-btn{display:flex;gap:4px;flex-shrink:0;margin-left:1rem}
-.lang-btn button{font-size:12px;padding:5px 12px;border:0.5px solid rgba(0,0,0,0.2);border-radius:8px;background:transparent;cursor:pointer;color:#6b6b67;font-family:inherit}
-.lang-btn button.active{background:#fff;color:#1a1a18;font-weight:500;border-color:rgba(0,0,0,0.3);box-shadow:0 1px 3px rgba(0,0,0,0.08)}
-.inputs-bar{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:8px;margin-bottom:1.25rem}
-.inp-card{background:#fff;border-radius:10px;padding:10px 12px;border:0.5px solid rgba(0,0,0,0.1)}
-.inp-card label{display:block;font-size:11px;color:#6b6b67;margin-bottom:5px}
-.inp-card input{width:100%;font-size:15px;font-weight:600;background:transparent;border:none;color:#1a1a18;outline:none;border-bottom:1px solid rgba(0,0,0,0.15);padding:2px 0;font-family:inherit}
-.inp-card input:focus{border-bottom-color:#185FA5}
-.scenarios-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:1.25rem}
-.sc-card{background:#fff;border:0.5px solid rgba(0,0,0,0.1);border-radius:12px;padding:14px;cursor:pointer;transition:box-shadow 0.15s,border-color 0.15s}
-.sc-card:hover{box-shadow:0 2px 8px rgba(0,0,0,0.08)}
-.sc-card.active{border:2px solid #185FA5;box-shadow:0 2px 12px rgba(24,95,165,0.12)}
-.sc-tag{font-size:10px;font-weight:600;padding:2px 8px;border-radius:6px;display:inline-block;margin-bottom:8px;letter-spacing:0.03em;text-transform:uppercase}
-.tag-1{background:#E6F1FB;color:#0C447C}
-.tag-2{background:#EAF3DE;color:#3B6D11}
-.tag-3{background:#FAEEDA;color:#633806}
-.sc-name{font-size:13px;font-weight:500;color:#1a1a18;margin-bottom:10px}
-.sc-total-brl{font-size:22px;font-weight:600;color:#1a1a18;line-height:1;letter-spacing:-0.02em}
-.sc-total-usd{font-size:12px;color:#6b6b67;margin-top:4px}
-.sc-meta{font-size:11px;color:#6b6b67;margin-top:8px;padding-top:8px;border-top:0.5px solid rgba(0,0,0,0.1);line-height:1.6}
-.sc-meta span{color:#1a1a18;font-weight:500}
-.see-detail{font-size:11px;color:#185FA5;margin-top:10px;cursor:pointer;background:none;border:none;padding:0;font-family:inherit}
-.chart-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:1.25rem}
-.chart-box{background:#fff;border:0.5px solid rgba(0,0,0,0.1);border-radius:12px;padding:14px}
-.chart-box h3{font-size:11px;color:#6b6b67;margin-bottom:10px;font-weight:400;text-transform:uppercase;letter-spacing:0.05em}
-.legend-row{display:flex;gap:14px;margin-top:8px;font-size:11px;color:#6b6b67;flex-wrap:wrap}
-.legend-dot{width:10px;height:10px;border-radius:2px;display:inline-block;margin-right:4px;vertical-align:middle}
-/* RESUMO TABLE */
-.resumo-box{background:#fff;border:0.5px solid rgba(0,0,0,0.1);border-radius:12px;padding:14px;margin-bottom:1.25rem;overflow-x:auto}
-.resumo-box h3{font-size:11px;color:#6b6b67;margin-bottom:12px;font-weight:400;text-transform:uppercase;letter-spacing:0.05em}
-.resumo-table{width:100%;border-collapse:collapse;font-size:12px}
-.resumo-table th{padding:7px 10px;background:#f0f4f8;color:#0C447C;font-weight:600;font-size:11px;text-align:center;border:0.5px solid rgba(0,0,0,0.1)}
-.resumo-table th.item-col{text-align:left;background:#e8edf2;color:#333}
-.resumo-table td{padding:6px 10px;border:0.5px solid rgba(0,0,0,0.07);color:#1a1a18;font-size:12px}
-.resumo-table td.item-col{color:#444;font-weight:500}
-.resumo-table td.center{text-align:center}
-.resumo-table tr.total-row td{background:#E6F1FB;font-weight:700;font-size:13px;color:#0C447C}
-.resumo-table tr:nth-child(even) td{background:#fafaf8}
-/* DETAIL */
-.detail-panel{background:#fff;border:0.5px solid rgba(0,0,0,0.1);border-radius:12px;padding:16px;display:none}
-.detail-panel.open{display:block}
-.detail-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}
-.detail-header h2{font-size:14px;font-weight:600;color:#1a1a18}
-.close-btn{font-size:12px;color:#6b6b67;cursor:pointer;border:0.5px solid rgba(0,0,0,0.15);background:#f5f5f3;padding:4px 10px;border-radius:6px;font-family:inherit}
-.det-table{width:100%;border-collapse:collapse;font-size:12px}
-.det-table th{text-align:left;color:#6b6b67;padding:6px 8px;border-bottom:0.5px solid rgba(0,0,0,0.1);font-weight:400;font-size:11px;text-transform:uppercase;letter-spacing:0.04em}
-.det-table th.num{text-align:right}
-.det-table td{padding:5px 8px;color:#1a1a18;border-bottom:0.5px solid rgba(0,0,0,0.06)}
-.det-table td.num{text-align:right}
-.det-table tr.cat-row td{font-weight:600;font-size:10px;color:#6b6b67;background:#f5f5f3;text-transform:uppercase;letter-spacing:0.05em;padding:5px 8px}
-.det-table tr.cat-total-row td{background:#f0f4f8;font-weight:600;font-size:12px;color:#185FA5;padding:5px 8px;font-style:italic}
-.det-table tr.cat-total-row td.num{color:#185FA5}
-.det-table input.cell-edit{width:100%;text-align:right;background:transparent;border:none;font-size:12px;color:#1a1a18;outline:none;border-bottom:0.5px solid transparent;font-family:inherit}
-.det-table input.cell-edit:focus{border-bottom:0.5px solid #185FA5}
-.summary-bar{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:14px}
-.sum-card{background:#f5f5f3;border-radius:8px;padding:10px 12px}
-.sum-card .lbl{font-size:10px;color:#6b6b67;margin-bottom:4px;text-transform:uppercase;letter-spacing:0.04em}
-.sum-card .val{font-size:15px;font-weight:600;color:#1a1a18}
-.sum-card .val.pos{color:#3B6D11}
-.sum-card .val.neg{color:#A32D2D}
-@media(max-width:600px){
-  .scenarios-grid{grid-template-columns:1fr}
-  .chart-row{grid-template-columns:1fr}
-  .summary-bar{grid-template-columns:repeat(2,1fr)}
-  .inputs-bar{grid-template-columns:repeat(2,1fr)}
+:root{
+  --bg:#F7F6F2;--surface:#FFFFFF;--surface2:#F0EEE8;--border:rgba(0,0,0,0.08);--border2:rgba(0,0,0,0.14);
+  --text:#1C1B17;--text2:#6B6860;--text3:#9B9890;
+  --accent:#1B4FD8;--accent-bg:#EEF2FD;--accent2:#059669;--accent2-bg:#E8F5EF;
+  --gold:#D97706;--gold-bg:#FEF3C7;--danger:#B91C1C;
+  --yes:#0F7B5A;--no:#C4C2BC;
+  --radius:14px;--radius-sm:8px;
+  --shadow:0 1px 3px rgba(0,0,0,0.06),0 4px 16px rgba(0,0,0,0.04);
 }
-</style>
+[data-theme="dark"]{
+  --bg:#0F0F0E;--surface:#1A1A18;--surface2:#242422;--border:rgba(255,255,255,0.07);--border2:rgba(255,255,255,0.13);
+  --text:#F0EFE9;--text2:#8A8880;--text3:#5A5856;
+  --accent:#4F7BFF;--accent-bg:#1A2340;--accent2:#34D399;--accent2-bg:#0F2A1E;
+  --gold:#C9A84C;--gold-bg:#2A1E08;--danger:#EF4444;
+  --yes:#2DB87A;--no:#444240;
+  --shadow:0 1px 3px rgba(0,0,0,0.3),0 4px 16px rgba(0,0,0,0.2);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;padding-top:72px;padding-bottom:4rem;transition:background .2s,color .2s}
+
+/* STICKY HEADER */
+.sticky-nav{position:fixed;top:0;left:0;right:0;z-index:100;background:var(--surface);border-bottom:1px solid var(--border);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)}
+.sticky-inner{max-width:980px;margin:0 auto;padding:0 1.5rem;height:56px;display:flex;align-items:center;justify-content:space-between;gap:1rem}
+.sticky-brand{display:flex;align-items:center}
+.sticky-logo{height:24px;transition:filter .2s}
+[data-theme="dark"] .sticky-logo{filter:invert(1)}
+.sticky-controls{display:flex;gap:6px;align-items:center}
+.ctrl-pill{display:flex;gap:2px;background:var(--surface2);border-radius:20px;padding:3px}
+.ctrl-pill button{font-size:11px;font-weight:600;padding:4px 12px;border:none;border-radius:16px;background:transparent;cursor:pointer;color:var(--text3);font-family:'Inter',sans-serif;transition:all .15s;letter-spacing:0.02em}
+.ctrl-pill button.active{background:var(--surface);color:var(--text);box-shadow:0 1px 3px rgba(0,0,0,0.12)}
+
+.container{max-width:980px;margin:0 auto;padding:0 1.5rem}
+
+/* PAGE HEADER */
+.page-header{padding:2rem 0 1.5rem;border-bottom:1px solid var(--border);margin-bottom:1.5rem}
+.eyebrow{font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--accent);margin-bottom:6px;display:flex;align-items:center;gap:8px}
+.eyebrow::before{content:'';display:inline-block;width:20px;height:2px;background:var(--accent);border-radius:1px}
+.page-header h1{font-family:'Sora',sans-serif;font-size:28px;font-weight:700;letter-spacing:-.03em;color:var(--text);line-height:1.1}
+.page-header h1 span{color:var(--accent)}
+.page-header .sub{font-size:12px;color:var(--text3);margin-top:5px}
+
+/* INPUTS */
+.section-lbl{font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--text3);margin-bottom:8px}
+.inputs-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:8px;margin-bottom:1.5rem}
+.inp-card{background:var(--surface);border-radius:var(--radius-sm);padding:12px 14px;border:1px solid var(--border);transition:border-color .15s}
+.inp-card:focus-within{border-color:var(--accent)}
+.inp-card label{display:block;font-size:10px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--text3);margin-bottom:6px}
+.inp-card input{width:100%;font-size:16px;font-weight:600;background:transparent;border:none;color:var(--text);outline:none;font-family:'Sora',sans-serif;letter-spacing:-.02em}
+
+/* SCENARIO CARDS */
+.sc-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:1.5rem}
+.sc-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:18px;cursor:pointer;transition:all .2s;position:relative;overflow:hidden}
+.sc-card:hover{box-shadow:var(--shadow)}
+.sc-card.active{border-color:transparent}
+.sc-card.active.s0{box-shadow:0 0 0 2px var(--accent),0 4px 20px rgba(27,79,216,.1)}
+.sc-card.active.s1{box-shadow:0 0 0 2px var(--accent2),0 4px 20px rgba(5,150,105,.1)}
+.sc-card.active.s2{box-shadow:0 0 0 2px var(--gold),0 4px 20px rgba(217,119,6,.1)}
+.sc-num{font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--text3);margin-bottom:4px}
+.sc-name{font-family:'Sora',sans-serif;font-size:15px;font-weight:600;color:var(--text);margin-bottom:14px;letter-spacing:-.02em}
+.sc-total{font-family:'Sora',sans-serif;font-size:26px;font-weight:700;letter-spacing:-.03em;color:var(--text);line-height:1}
+.sc-alt{font-size:11px;color:var(--text3);margin-top:3px}
+.sc-divider{height:1px;background:var(--border);margin:12px 0}
+.sc-row{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:5px}
+.sc-lbl{font-size:11px;color:var(--text3)}
+.sc-val{font-size:12px;font-weight:600;color:var(--text)}
+.sc-profit{font-size:13px;font-weight:700}
+.sc-btn{margin-top:12px;font-size:11px;color:var(--accent);background:none;border:none;cursor:pointer;font-family:'Inter',sans-serif;padding:0;display:flex;align-items:center;gap:4px;transition:gap .15s}
+.sc-card:hover .sc-btn{gap:8px}
+
+/* CHARTS */
+.charts-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:1.5rem}
+.chart-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:18px}
+.chart-card.full{grid-column:1/-1}
+.chart-ttl{font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--text3);margin-bottom:14px}
+.chart-legend{display:flex;gap:16px;margin-top:10px;flex-wrap:wrap}
+.cleg-item{display:flex;align-items:center;gap:6px;font-size:11px;color:var(--text2)}
+.cleg-dot{width:8px;height:8px;border-radius:2px;flex-shrink:0}
+.cleg-line{width:18px;height:2px;border-radius:1px;flex-shrink:0}
+
+/* RESUMO TABLE */
+.resumo-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:18px;margin-bottom:1.5rem;overflow-x:auto}
+.resumo-card h3{font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--text3);margin-bottom:16px}
+.rt{width:100%;border-collapse:collapse;min-width:500px}
+.rt thead th{padding:0 14px 10px;font-size:10px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--text3);text-align:center;border-bottom:1px solid var(--border2)}
+.rt thead th.rt-item{text-align:left}
+.rt tbody tr{border-bottom:1px solid var(--border);transition:background .1s}
+.rt tbody tr:last-child{border-bottom:none}
+.rt tbody tr:hover{background:var(--surface2)}
+.rt tbody tr.rt-total{border-top:2px solid var(--border2);background:var(--surface2)}
+.rt td{padding:9px 14px;font-size:12px;color:var(--text);vertical-align:middle}
+.rt td.rt-item{font-size:12px;color:var(--text2)}
+.rt td.rt-c{text-align:center}
+.rt-ico{display:inline-flex;align-items:center;justify-content:center}
+.rt-txt{font-size:11px;color:var(--text2)}
+.rt-total-val{font-family:'Sora',sans-serif;font-size:14px;font-weight:700;color:var(--text)}
+
+/* DETAIL */
+.detail-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:18px;display:none;margin-bottom:1.5rem}
+.detail-card.open{display:block}
+.detail-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}
+.detail-head h2{font-family:'Sora',sans-serif;font-size:15px;font-weight:600;color:var(--text);letter-spacing:-.02em}
+.det-close{font-size:11px;color:var(--text3);cursor:pointer;border:1px solid var(--border2);background:var(--surface2);padding:5px 12px;border-radius:6px;font-family:'Inter',sans-serif}
+.dt{width:100%;border-collapse:collapse;font-size:12px}
+.dt th{text-align:left;color:var(--text3);padding:6px 10px;border-bottom:1px solid var(--border2);font-size:10px;font-weight:700;letter-spacing:.07em;text-transform:uppercase}
+.dt th.num{text-align:right}
+.dt td{padding:7px 10px;color:var(--text);border-bottom:1px solid var(--border)}
+.dt td.num{text-align:right;font-variant-numeric:tabular-nums}
+.dt tr.cat-h td{font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--text3);background:var(--surface2);padding:5px 10px}
+.dt tr.cat-f td{font-size:11px;font-weight:600;color:var(--accent);background:var(--accent-bg);padding:6px 10px;border-bottom:1px solid var(--border2)}
+.dt input.edit{width:100%;text-align:right;background:transparent;border:none;font-size:12px;color:var(--text);outline:none;border-bottom:1px solid transparent;font-family:'Inter',sans-serif;font-variant-numeric:tabular-nums}
+.dt input.edit:focus{border-bottom-color:var(--accent)}
+.sum-strip{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:14px}
+.sum-tile{background:var(--surface2);border-radius:var(--radius-sm);padding:12px 14px}
+.sum-tile .lbl{font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--text3);margin-bottom:5px}
+.sum-tile .val{font-family:'Sora',sans-serif;font-size:16px;font-weight:700;color:var(--text);letter-spacing:-.02em}
+.sum-tile .val.pos{color:var(--accent2)}
+.sum-tile .val.neg{color:var(--danger)}
+
+/* TABS */
+.tabs-nav{display:flex;gap:0;margin-bottom:1.5rem;border-bottom:1px solid var(--border2)}
+.tab-btn{font-family:'Sora',sans-serif;font-size:13px;font-weight:600;letter-spacing:-.01em;padding:10px 20px;border:none;background:none;color:var(--text3);cursor:pointer;border-bottom:2px solid transparent;transition:all .15s;margin-bottom:-1px}
+.tab-btn.active{color:var(--accent);border-bottom-color:var(--accent)}
+.tab-btn:hover{color:var(--text)}
+.tab-pane{display:none}
+.tab-pane.active{display:block}
+/* PAUTA */
+.pauta-section{margin-bottom:1.5rem}
+.pauta-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:20px;margin-bottom:1rem}
+.pauta-card h3{font-family:'Sora',sans-serif;font-size:14px;font-weight:600;color:var(--text);margin-bottom:12px;letter-spacing:-.02em}
+.pauta-card ul{list-style:none;padding:0}
+.pauta-card li{font-size:13px;color:var(--text2);padding:5px 0;padding-left:16px;position:relative;line-height:1.5}
+.pauta-card li::before{content:'';position:absolute;left:0;top:12px;width:6px;height:6px;border-radius:50%;background:var(--accent);opacity:.5}
+.pauta-day{font-family:'Sora',sans-serif;font-size:12px;font-weight:700;color:var(--accent);text-transform:uppercase;letter-spacing:.06em;margin-top:14px;margin-bottom:6px;padding-top:10px;border-top:1px solid var(--border)}
+.pauta-day:first-child{margin-top:0;padding-top:0;border-top:none}
+.pauta-card li[contenteditable]{outline:none;border-radius:4px;padding:5px 5px 5px 16px;transition:background .15s;cursor:text}
+.pauta-card li[contenteditable]:hover{background:var(--surface2)}
+.pauta-card li[contenteditable]:focus{background:var(--accent-bg)}
+.add-item{display:flex;align-items:center;gap:6px;font-size:11px;color:var(--accent);background:none;border:1px dashed var(--border2);border-radius:6px;padding:6px 12px;cursor:pointer;font-family:'Inter',sans-serif;margin-top:8px;width:100%;transition:background .15s}
+.add-item:hover{background:var(--accent-bg)}
+.notes-area{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:20px;display:flex;flex-direction:column}
+.notes-area h3{font-family:'Sora',sans-serif;font-size:14px;font-weight:600;color:var(--text);margin-bottom:12px;letter-spacing:-.02em}
+.notes-area textarea{width:100%;min-height:200px;background-color:#FFFFFF;background-image:radial-gradient(circle, #C8C8C0 0.7px, transparent 0.7px);background-size:14px 14px;background-position:7px 7px;border:1px solid var(--border);border-radius:var(--radius-sm);padding:14px;font-family:'Inter',sans-serif;font-size:13px;color:var(--text);resize:vertical;outline:none;line-height:1.6}
+.notes-area textarea:focus{border-color:var(--accent)}
+[data-theme="dark"] .notes-area textarea{background-color:#1A1A18;background-image:radial-gradient(circle, #444440 0.7px, transparent 1px)}
+
+/* SIMULATOR */
+.sim-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:18px;margin-bottom:1.5rem;position:relative;overflow:hidden}
+.sim-card h3{font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--accent);margin-bottom:0;display:flex;align-items:center;gap:8px;cursor:pointer;user-select:none}
+.sim-card h3::before{content:'';display:inline-block;width:16px;height:2px;background:var(--accent);border-radius:1px}
+.sim-card h3::after{content:'▸';font-size:12px;margin-left:auto;transition:transform .2s}
+.sim-card.open h3::after{transform:rotate(90deg)}
+.sim-card.open h3{margin-bottom:14px}
+.sim-body{display:none}
+.sim-card.open .sim-body{display:block}
+.sim-row{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:10px;align-items:end}
+.sim-field{background:var(--surface2);border-radius:var(--radius-sm);padding:10px 14px}
+.sim-field label{display:block;font-size:9px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--text3);margin-bottom:5px}
+.sim-field .sim-val{font-family:'Sora',sans-serif;font-size:18px;font-weight:700;color:var(--text);letter-spacing:-.02em}
+.sim-field .sim-val.gap{color:var(--danger)}
+.sim-field .sim-val.sub{color:var(--accent)}
+.sim-field input{width:100%;font-size:18px;font-weight:700;background:transparent;border:none;color:var(--accent);outline:none;font-family:'Sora',sans-serif;letter-spacing:-.02em}
+.sim-field.editable{border:1px solid var(--accent);background:var(--accent-bg)}
+.sim-note{font-size:10px;color:var(--text3);margin-top:10px;font-style:italic}
+
+@media(max-width:640px){
+  .sc-grid,.charts-row,.sum-strip{grid-template-columns:1fr}
+  .chart-card.full{grid-column:auto}
+  .inputs-grid{grid-template-columns:repeat(2,1fr)}
+  .sim-row{grid-template-columns:repeat(2,1fr)}
+}</style>
 </head>
 <body>
+
+<!-- STICKY NAV -->
+<nav class="sticky-nav">
+  <div class="sticky-inner">
+    <div class="sticky-brand"><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAfQAAAB9CAYAAABUHpEuAAAJLElEQVR4nO3d247jOA4A0NRi//+Xax+2g6mpzs02JZLSOcCggcZ0LFIX2o4j324AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAMCyvrIbAMm+n/z9TnNDDmABJiy7elbEflt5jsgBLOQ/2Q2ABJ8WsqP/bydyAItR0NmN4nQuB/IGxSno7ORsUVqpmK0UC/CDgs4uFLLr5BAKU9BhHwoyLExBB4AFKOjswJVpDD9fg8IUdABYgIIO77kyBcpT0NmBgnydHEJxCjq8ppDJAbSgoLOLM0VptUImB7AwBR0eW7WQHYlr1RzAkkxYdvTqZ2y7zAk5AACAarqeibu6AIAfuhS/Kzt9rRRjl1h47Mg43r2vP83VSnnaLeYd5sO7GEPjqpqkkVt1ZsccHduZeM62ISN3Z9r6u50Rn3FWVH9HtOdoW2b1d+ScyJ7fn9ot5grr3gypa2u1pMzac7tLYfrU0Xi63PGIamdGQR/R31falHlS80ylOTHD6PVNzDEy3/1wKZ4qAyArgZ0XrEc+jadDQc8s5r8/44gZfT7rrswKi2X2Gpexton5muyXOZ2O5b+RrTghO3Hft/jBnxnT/djZEzpTZuyz+n7EuB0ta15kzYnsdWC1u5CfHrvbvHjkdP9lbiyTXczvIttRJaZ3qg/67DzOfC7hrCPHy85n9vFvt7knWzvFm3W8Z6q046pTcex2FvdK5VusZ72Kqept9+h2jb7VnN3/n7Q160Gd7Nw8MmrsVoz1dlvva8UjOpyYP9PiCr1Ksh4507bK8bCHqmNwp3ZVjfV2G9u2ynF3dvokbGZB79D5n7axym21d7ptwFPh6vyICmOgWj92mBtR7esQ6+2230nMXZf+CTOroK+U1G6x7DCZfXUUr/Ptyk9caWvHQrHjs0IdXVrLZhT0bp3/qr3dYulEbo+rdHXesf98zXZMxxOZ2+3YnddMl+fz6IKenaBInWOp3vaqD+g9UyGfM/Yc+FSFfMD2RhZ0k7y+Sld4Z4xo/4ycfP347+y/r6L7PO/e/iOufs3AOCFzetTGMrO3+4s+3syNGd4dZ/WJ1C2+6LsJEbvarWTkz/AqG/UT0wgZ2xhHHjPrBPh+3HexhLWvy28yM34XPPKkIeuBo+gnwTN/pzxq4R+10ETdIp+xb3/G7fzsh/AyTiRmvoPh7HGzY45ow8zxfGYchdXhEVfoGYPu0b+r9lTn1U77CmrHLio93X+k71+N39VutUfMidut17y4EvPseLPX8t//vvpv6j+Nc9g8jv4OvcoAiPqMCFe+K330WdGy8lTxQbgqY+Z2+7st2Vew0Z8bmetK/fZM5DrQyQ4xl+nbzL3cn1lpomcff0U75fTr15+rqHhiOurkZ8RiP2M8RNzmXm3clhdZ0A2Af9vhKvJsn3e6RRqh4t2Is8e7GsvIeKq+Y2CEyrFWWqNGKxVrVEFfeQBUm8jdzShuFfusYpsgWrW1vOsJ5CkVb7kzX7mB+UCHNr7Tvah3uNOwwjjJ1KGPeWLU79CPqrbQVR+YXZ9479jmaPcc7PRay+rzaZSd4t5pPJcVcYUu0Xub0f9VFsbIdnSbNzN+skeubmMyyjJxu+U+hkXsb9UnTdae8NXzgj56p+p6V7Vdw1wt6AZ6joytGK/wvdxrqxb2HfqOPZUc267Q/1ayozZVaTOVu9EnPpmF/Vls3U42zOF55LoQBf21bgvZK1lX4Cvl8M4DQO9lLvQr5G+Ujidt1bd8LeNKQV8qEX+stOVsBV1utVfss+yrda6pOKai7RBjK67Q+anKBK3Sjlcqt7Hai4mIp1/4i4L+j8oL9E9dJnKXdl7RYU/tT3UZ/8ATCjpRKr1pb6aVijp/Wyn3Hb8/P2urLV/vFPT/e9RBKw7yT0QM1qzcZR13xouFdh2Ps6z0lkc2paDvMflmxtjlQbgRx6wwlnYv/LvHz8aq7OUOFYphhJ9xKC6MsNO48pO1A3a/Qo8uIqsUpbOWmyAXzbgVzz+i95s3nnvads5lXKFvm+wAqy4wnb+3/8Q9vqtt/L6ZP5Cp9Pzb/Qqdx3bf1GWUqrFWbdcRlU/oKujYx/r0oIyC3qGTOrSRnjourCvTHzVZg09whb6+ygtW5baNNCruSovgzLZUitvPF6+bEeOSecwq6Csmc7XitFo8j3wa44rjdRXdfibJa+baBa7Q+1htoHdZTL9//JndB11ydjc6X4p5ruj+jfi8LXeIu8ss6NmLI3nKT4wXVhu37/rial+Nylflk4Vqsl6dnPE5W8u+Qh+9acCZq6qVBlbnwnnE7KJx9Wp9pTH2iei3v139vFHzout8y353/ez5sOz8u1LQowbBiOT+/sxlO7ChKoveu3Z8MmYqjatKbXkkon3Vb8nu6my/VB+z7VTZ+vXesVcmW+bgWHWR+LrF5rVLno7EfHTsdlzEosbBmXneMV+jVM7Fz7ZFnCxzwtWCHr3gj5zwnXfZMgHmibjaGLGV6IixmzUfMt+K94kd51vkWr5j/kqocoX+226v39zBDr+9votuU4UT0eiT99kq5DDDTnFv/YT77RbzUFyLQP/ovCBl6dS/Vxkfa9ppDLOx7Kfc2UOHBbVqMf8kd7Pa3qEff5vV5o65+W2FGLYWVdA7DYSqC3e0Kn1SpR3E6NSfndr6zi7r1mhL59EV+nUrLRq76NJnXdpZ0dncLb3gf6DrmOva7lCRBb1TQneftEed7dtOL6qoNn6rteenr1vd9lVuWxfy929t8hF9hd4m8Ea6nnx0HAtV2jyjHVVijbRiTFnksqERt9yrD4RnZ/BdCyexssdv9vGPqHI1XKUd1VzNyWo5XX6NH/UdetWBEN2uXeLsdvxXPmlbRoHoXJQy210hZxXaMMrM2FbO4xQjH4qr1DmdF8sqdsxfh588VbnqmD3HdprT2X08Os879eVQo3eKu3dS9a0eibNazn/Gs8pDeDN21Box51cbW52MmAdR/Wlc/DE7ETbA6O1d/+2S92p7sldW9VWnXHe2b/XpIKu9nMFAIdORN04R85ZF6tGvSSok3NUOACzu+5b/QAgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABQyf8AkXqVvUlgivYAAAAASUVORK5CYII=" alt="Envisionar" class="sticky-logo"></div>
+    <div class="sticky-controls">
+      <div class="ctrl-pill" id="lang-ctrl">
+        <button class="active" onclick="setLang('pt',this)">PT</button>
+        <button onclick="setLang('en',this)">EN</button>
+      </div>
+      <div class="ctrl-pill" id="theme-ctrl">
+        <button class="active" onclick="setTheme('light',this)">☀</button>
+        <button onclick="setTheme('dark',this)">◑</button>
+      </div>
+    </div>
+  </div>
+</nav>
+
 <div class="container">
 
-<div class="top-bar">
-  <div>
-    <h1 id="t-title">Summit Premier 2026 — Simulação de Custos</h1>
-    <div class="sub" id="t-sub">Campos editáveis · Atualização em tempo real · Dados: GLN 20/05/2026</div>
+  <div class="page-header">
+    <div class="eyebrow" id="t-eyebrow">Simulação de Custos</div>
+    <h1 id="t-title">Summit <span>Premier</span> 2026</h1>
+    <div class="sub" id="t-sub">Reunião Envisionar/GLN 22/06/2026</div>
   </div>
-  <div class="lang-btn">
-    <button class="active" onclick="setLang('pt',this)">PT</button>
-    <button onclick="setLang('en',this)">EN</button>
-  </div>
-</div>
 
-<div class="inputs-bar">
-  <div class="inp-card"><label id="t-part">Nº de participantes</label><input type="number" id="inp-part" value="8000" min="1" oninput="recalc()"></div>
-  <div class="inp-card"><label id="t-cambio">Câmbio (R$/USD)</label><input type="number" id="inp-cambio" value="5.10" step="0.01" min="1" oninput="recalc()"></div>
-  <div class="inp-card"><label id="t-ticket1">Ticket Cenário 1 (R$)</label><input type="number" id="inp-t1" value="139" step="1" min="0" oninput="recalc()"></div>
-  <div class="inp-card"><label id="t-ticket2">Ticket Cenário 2 (R$)</label><input type="number" id="inp-t2" value="90" step="1" min="0" oninput="recalc()"></div>
-  <div class="inp-card"><label id="t-ticket3">Ticket Cenário 3 (R$)</label><input type="number" id="inp-t3" value="139" step="1" min="0" oninput="recalc()"></div>
-  <div class="inp-card"><label id="t-sub-gln">Subsídio GLN (R$)</label><input type="number" id="inp-gln" value="0" step="1000" min="0" oninput="recalc()"></div>
-</div>
-
-<!-- SCENARIO CARDS -->
-<div class="scenarios-grid">
-  <div class="sc-card active" id="card-0" onclick="openDetail(0)">
-    <div class="sc-tag tag-1" id="t-tag1">Cenário 1</div>
-    <div class="sc-name" id="t-n1">Atual</div>
-    <div class="sc-total-brl" id="sc-brl-0">R$ 569.220</div>
-    <div class="sc-total-usd" id="sc-usd-0">USD 111.612</div>
-    <div class="sc-meta">
-      <span id="t-unit">Custo unit.:</span> <span id="sc-unit-0">R$ 71,15</span><br>
-      <span id="t-tick">Ticket:</span> <span id="sc-tick-0">R$ 139</span><br>
-      <span id="t-liq">Lucro liq./part.:</span> <span id="sc-liq-0" style="color:#3B6D11">R$ 67,85</span>
-    </div>
-    <button class="see-detail" id="t-see">Ver detalhes →</button>
+  <div class="tabs-nav">
+    <button class="tab-btn active" onclick="switchTab('pauta',this)" id="t-tab-pauta">Pauta</button>
+    <button class="tab-btn" onclick="switchTab('cenarios',this)" id="t-tab-cenarios">Cenários</button>
   </div>
-  <div class="sc-card" id="card-1" onclick="openDetail(1)">
-    <div class="sc-tag tag-2" id="t-tag2">Cenário 2</div>
-    <div class="sc-name" id="t-n2">Redução de custos</div>
-    <div class="sc-total-brl" id="sc-brl-1">R$ 421.200</div>
-    <div class="sc-total-usd" id="sc-usd-1">USD 82.588</div>
-    <div class="sc-meta">
-      <span>Custo unit.:</span> <span id="sc-unit-1">R$ 52,65</span><br>
-      <span>Ticket:</span> <span id="sc-tick-1">R$ 90</span><br>
-      <span>Lucro liq./part.:</span> <span id="sc-liq-1" style="color:#3B6D11">R$ 37,35</span>
-    </div>
-    <button class="see-detail">Ver detalhes →</button>
-  </div>
-  <div class="sc-card" id="card-2" onclick="openDetail(2)">
-    <div class="sc-tag tag-3" id="t-tag3">Cenário 3</div>
-    <div class="sc-name" id="t-n3">Digital</div>
-    <div class="sc-total-brl" id="sc-brl-2">R$ 293.682</div>
-    <div class="sc-total-usd" id="sc-usd-2">USD 57.585</div>
-    <div class="sc-meta">
-      <span>Custo unit.:</span> <span id="sc-unit-2">R$ 36,71</span><br>
-      <span>Ticket:</span> <span id="sc-tick-2">R$ 139</span><br>
-      <span>Lucro liq./part.:</span> <span id="sc-liq-2" style="color:#3B6D11">R$ 102,29</span>
-    </div>
-    <button class="see-detail">Ver detalhes →</button>
-  </div>
-</div>
 
-<!-- RESUMO TABLE -->
-<div class="resumo-box">
-  <h3 id="t-resumo-title">Resumo comparativo — itens inclusos por cenário</h3>
-  <table class="resumo-table" id="resumo-table">
-    <thead>
-      <tr>
-        <th class="item-col" id="rh-item">Item</th>
-        <th id="rh-c1">Cenário 1</th>
-        <th id="rh-c2">Cenário 2</th>
-        <th id="rh-c3">Cenário 3</th>
-      </tr>
-    </thead>
-    <tbody id="resumo-tbody"></tbody>
-  </table>
-</div>
-
-<!-- CHARTS -->
-<div class="chart-row">
-  <div class="chart-box">
-    <h3 id="t-chart1">Custo total por cenário</h3>
-    <div style="position:relative;height:200px"><canvas id="barChart" role="img" aria-label="Custo total dos 3 cenários">Cenário 1: R$569.220, Cenário 2: R$421.200, Cenário 3: R$293.682</canvas></div>
-    <div class="legend-row">
-      <span><span class="legend-dot" style="background:#185FA5"></span><span id="t-leg1">Cenário 1</span></span>
-      <span><span class="legend-dot" style="background:#3B6D11"></span><span id="t-leg2">Cenário 2</span></span>
-      <span><span class="legend-dot" style="background:#BA7517"></span><span id="t-leg3">Cenário 3</span></span>
+  <!-- PAUTA TAB -->
+  <div class="tab-pane active" id="tab-pauta">
+    <div style="display:grid;grid-template-columns:2fr 3fr;gap:16px">
+      <!-- LEFT 40% -->
+      <div>
+        <div class="pauta-card">
+          <h3 id="t-pauta-obj">Objetivo da reunião</h3>
+          <ul>
+            <li contenteditable="true">Alinhar com a GLN um novo modelo de parceria para o Brasil que preserve a missão</li>
+            <li contenteditable="true">Ampliar o alcance do Summit no Brasil</li>
+            <li contenteditable="true">Simplificar e reduzir fricções para as igrejas adquirirem o Summit</li>
+            <li contenteditable="true">Manter a sustentabilidade financeira da operação</li>
+            <li contenteditable="true">Definir com clareza o papel futuro da Envisionar na estratégia brasileira do Summit</li>
+          </ul>
+        </div>
+        <div class="pauta-card">
+          <h3 id="t-pauta-disc">Pauta da Discussão</h3>
+          <div class="pauta-day">Segunda 22/06 — Manhã</div>
+          <ul>
+            <li contenteditable="true">Simples e Excelente (conceito)</li>
+            <li contenteditable="true">Envisionar autoridade Igreja Brasileira (dados)</li>
+            <li contenteditable="true">GLN e a visão de futuro do Summit</li>
+          </ul>
+          <div class="pauta-day">Segunda 22/06 — Tarde</div>
+          <ul>
+            <li contenteditable="true">03 cenários detalhados</li>
+            <li contenteditable="true">Resumo e Definições do dia</li>
+          </ul>
+          <div class="pauta-day">Terça 23/06 — Manhã</div>
+          <ul>
+            <li contenteditable="true">03 cenários detalhados (subsídio)</li>
+          </ul>
+          <div class="pauta-day">Terça 23/06 — Tarde</div>
+          <ul>
+            <li contenteditable="true">Direitos de uso do conteúdo p/ novos modelos de Summit</li>
+            <li contenteditable="true">Exclusividade da venda Summit Chicago (apenas via Envisionar) + cadeiras (200)</li>
+            <li contenteditable="true">Resumo e Definições do dia</li>
+          </ul>
+          <div class="pauta-day">Quarta 24/06 — Manhã</div>
+          <ul>
+            <li contenteditable="true">Livre para assuntos que ficaram pendentes</li>
+          </ul>
+        </div>
+      </div>
+      <!-- RIGHT 60% -->
+      <div class="notes-area">
+        <h3 id="t-notes-title">Anotações</h3>
+        <textarea id="notes-text" placeholder="Anote aqui os principais tópicos discutidos..." style="min-height:calc(100% - 40px)"></textarea>
+      </div>
     </div>
   </div>
-  <div class="chart-box">
-    <h3 id="t-chart2">Lucro líquido total</h3>
-    <div style="position:relative;height:200px"><canvas id="profitChart" role="img" aria-label="Lucro líquido total dos 3 cenários">Cenário 1, Cenário 2, Cenário 3</canvas></div>
-  </div>
-</div>
 
-<!-- HISTORICAL CHART -->
-<div class="chart-box" style="margin-bottom:1.25rem">
-  <h3 id="t-chart3">Faturamento histórico Summit Premier (2018–2025)</h3>
-  <div style="position:relative;height:260px"><canvas id="histChart" role="img" aria-label="Faturamento histórico Summit Premier 2018 a 2025">2018 a 2025</canvas></div>
-  <div class="legend-row" style="margin-top:8px">
-    <span><span class="legend-dot" style="background:#185FA5"></span><span id="t-leg-fat">Faturamento</span></span>
-    <span><span class="legend-dot" style="background:#BA7517;border-radius:50%"></span><span id="t-leg-pct">% do faturamento total GLN</span></span>
-  </div>
-</div>
+  <!-- CENÁRIOS TAB -->
+  <div class="tab-pane" id="tab-cenarios">
 
-<!-- DETAIL PANEL -->
-<div class="detail-panel" id="detail-panel">
-  <div class="detail-header">
-    <h2 id="detail-title">Detalhamento — Cenário 1</h2>
-    <button class="close-btn" onclick="closeDetail()" id="t-close">✕ Fechar</button>
+  <div class="section-lbl" id="t-inputs-lbl" style="margin-bottom:8px">Parâmetros de simulação</div>
+  <div class="inputs-grid">
+    <div class="inp-card"><label id="t-part">Participantes</label><input type="number" id="inp-part" value="8000" min="1" oninput="recalc()"></div>
+    <div class="inp-card"><label id="t-cambio">Câmbio R$/USD</label><input type="number" id="inp-cambio" value="5.10" step="0.01" min="1" oninput="recalc()"></div>
+    <div class="inp-card"><label id="t-t1">Fee C1 (R$)</label><input type="number" id="inp-t1" value="139" step="1" min="0" oninput="recalc()"></div>
+    <div class="inp-card"><label id="t-t2">Fee C2 (R$)</label><input type="number" id="inp-t2" value="139" step="1" min="0" oninput="recalc()"></div>
+    <div class="inp-card"><label id="t-t3">Fee C3 (R$)</label><input type="number" id="inp-t3" value="139" step="1" min="0" oninput="recalc()"></div>
   </div>
-  <table class="det-table">
-    <thead><tr>
-      <th id="t-dh1">Item</th>
-      <th id="t-dh2">Executor</th>
-      <th class="num" id="t-dh3">Total</th>
-      <th class="num" id="t-dh4">Unit.</th>
-    </tr></thead>
-    <tbody id="detail-tbody"></tbody>
-  </table>
-  <div class="summary-bar" id="detail-summary"></div>
-</div>
 
-</div><!-- /container -->
+  <div class="sim-card">
+    <h3 id="t-sim-title" onclick="this.parentElement.classList.toggle('open')">Simulador de cenários</h3>
+    <div class="sim-body">
+    <div class="sim-row">
+      <div class="sim-field editable">
+        <label id="t-sim-fee">Fee Envisionar (R$)</label>
+        <input type="number" id="sim-fee" value="30" step="1" min="0" oninput="calcSim()">
+      </div>
+      <div class="sim-field">
+        <label id="t-sim-rec-atual">Receita no fee atual (R$ 139)</label>
+        <div class="sim-val" id="sim-rec-atual">R$ 1.112.000</div>
+      </div>
+      <div class="sim-field">
+        <label id="t-sim-rec-novo">Receita no novo fee</label>
+        <div class="sim-val" id="sim-rec-novo">R$ 240.000</div>
+      </div>
+      <div class="sim-field">
+        <label id="t-sim-gap">Gap de receita</label>
+        <div class="sim-val gap" id="sim-gap">R$ 872.000</div>
+      </div>
+    </div>
+    <div class="sim-row" style="margin-top:10px;grid-template-columns:1fr 3fr">
+      <div class="sim-field" style="border:1px solid var(--accent);background:var(--accent-bg)">
+        <label id="t-sim-sub">Subsídio GLN necessário</label>
+        <div class="sim-val sub" id="sim-sub">R$ 923.710</div>
+      </div>
+      <div style="display:flex;align-items:center">
+        <div class="sim-note" id="t-sim-note">* O subsídio inclui acréscimo de 5,93% referente a impostos.</div>
+      </div>
+    </div>
+    </div><!-- /sim-body -->
+  </div>
+
+  <div class="section-lbl" id="t-sc-lbl" style="margin-bottom:8px">Cenários</div>
+  <div class="sc-grid">
+    <div class="sc-card s0 active" id="card-0" onclick="openDetail(0)">
+      <div class="sc-num" id="t-tag1">Cenário 1</div>
+      <div class="sc-name" id="t-n1">Atual</div>
+      <div class="sc-total" id="sc-main-0">—</div>
+      <div class="sc-alt" id="sc-alt-0">—</div>
+      <div class="sc-divider"></div>
+      <div class="sc-row"><span class="sc-lbl tx-unit" id="t-unit">Custo unit.</span><span class="sc-val" id="sc-unit-0">—</span></div>
+      <div class="sc-row"><span class="sc-lbl tx-tick" id="t-tick">Fee</span><span class="sc-val" id="sc-tick-0">—</span></div>
+      <div class="sc-row"><span class="sc-lbl tx-liq" id="t-liq">Lucro / part.</span><span class="sc-profit" id="sc-liq-0">—</span></div>
+      <button class="sc-btn tx-see" id="t-see">Ver detalhes →</button>
+    </div>
+    <div class="sc-card s1" id="card-1" onclick="openDetail(1)">
+      <div class="sc-num" id="t-tag2">Cenário 2</div>
+      <div class="sc-name" id="t-n2">Redução de custos</div>
+      <div class="sc-total" id="sc-main-1">—</div>
+      <div class="sc-alt" id="sc-alt-1">—</div>
+      <div class="sc-divider"></div>
+      <div class="sc-row"><span class="sc-lbl tx-unit">Custo unit.</span><span class="sc-val" id="sc-unit-1">—</span></div>
+      <div class="sc-row"><span class="sc-lbl tx-tick">Fee</span><span class="sc-val" id="sc-tick-1">—</span></div>
+      <div class="sc-row"><span class="sc-lbl tx-liq">Lucro / part.</span><span class="sc-profit" id="sc-liq-1">—</span></div>
+      <button class="sc-btn tx-see">Ver detalhes →</button>
+    </div>
+    <div class="sc-card s2" id="card-2" onclick="openDetail(2)">
+      <div class="sc-num" id="t-tag3">Cenário 3</div>
+      <div class="sc-name" id="t-n3">Digital</div>
+      <div class="sc-total" id="sc-main-2">—</div>
+      <div class="sc-alt" id="sc-alt-2">—</div>
+      <div class="sc-divider"></div>
+      <div class="sc-row"><span class="sc-lbl tx-unit">Custo unit.</span><span class="sc-val" id="sc-unit-2">—</span></div>
+      <div class="sc-row"><span class="sc-lbl tx-tick">Fee</span><span class="sc-val" id="sc-tick-2">—</span></div>
+      <div class="sc-row"><span class="sc-lbl tx-liq">Lucro / part.</span><span class="sc-profit" id="sc-liq-2">—</span></div>
+      <button class="sc-btn tx-see">Ver detalhes →</button>
+    </div>
+  </div>
+
+  <div class="charts-row">
+    <div class="chart-card">
+      <div class="chart-ttl" id="t-ch1">Custo total por cenário</div>
+      <div style="position:relative;height:200px"><canvas id="barChart"></canvas></div>
+      <div class="chart-legend">
+        <div class="cleg-item"><div class="cleg-dot" style="background:#1B4FD8"></div><span id="t-leg1">Cenário 1</span></div>
+        <div class="cleg-item"><div class="cleg-dot" style="background:#059669"></div><span id="t-leg2">Cenário 2</span></div>
+        <div class="cleg-item"><div class="cleg-dot" style="background:#D97706"></div><span id="t-leg3">Cenário 3</span></div>
+      </div>
+    </div>
+    <div class="chart-card">
+      <div class="chart-ttl" id="t-ch2">Lucro líquido total</div>
+      <div style="position:relative;height:200px"><canvas id="profitChart"></canvas></div>
+    </div>
+    <div class="chart-card full">
+      <div class="chart-ttl" id="t-ch3">Receita total Envisionar x Summit Premier (2018–2025)</div>
+      <div style="position:relative;height:240px"><canvas id="histChart"></canvas></div>
+      <div class="chart-legend">
+        <div class="cleg-item"><div class="cleg-dot" style="background:rgba(27,79,216,.9)"></div><span id="t-leg-sp">Summit Premier</span></div>
+        <div class="cleg-item"><div class="cleg-dot" style="background:rgba(27,79,216,.4);border:1px solid rgba(27,79,216,.6)"></div><span id="t-leg-tot">Faturamento Envisionar</span></div>
+      </div>
+      <div id="hist-summary" style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:14px;font-family:'Inter',sans-serif">
+      </div>
+    </div>
+  </div>
+
+  <div class="resumo-card">
+    <h3 id="t-rt-ttl">Resumo comparativo — itens inclusos</h3>
+    <table class="rt">
+      <thead><tr>
+        <th class="rt-item" id="rh0">Item</th>
+        <th id="rh1">Cenário 1</th>
+        <th id="rh2">Cenário 2</th>
+        <th id="rh3">Cenário 3</th>
+      </tr></thead>
+      <tbody id="rt-body"></tbody>
+    </table>
+  </div>
+
+  <div class="detail-card" id="detail-panel">
+    <div class="detail-head">
+      <h2 id="det-title">Detalhamento</h2>
+      <button class="det-close" onclick="closeDetail()" id="t-close">✕ Fechar</button>
+    </div>
+    <table class="dt">
+      <thead><tr>
+        <th id="t-dh1">Item</th><th id="t-dh2">Executor</th>
+        <th class="num" id="t-dh3">Total</th><th class="num" id="t-dh4">Unit.</th>
+      </tr></thead>
+      <tbody id="dt-body"></tbody>
+    </table>
+    <div class="sum-strip" id="det-sum"></div>
+  </div>
+
+  </div><!-- /tab-cenarios -->
+
+</div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <script>
-var lang='pt';
-var currentScene=0;
+var lang='pt', currentScene=0;
 
-var i18n={
+var T={
   pt:{
-    title:'Summit Premier 2026 — Simulação de Custos',
-    sub:'Campos editáveis · Atualização em tempo real · Dados: GLN 20/05/2026',
-    part:'Nº de participantes',cambio:'Câmbio (R$/USD)',
-    ticket1:'Ticket Cenário 1 (R$)',ticket2:'Ticket Cenário 2 (R$)',ticket3:'Ticket Cenário 3 (R$)',
-    subgln:'Subsídio GLN (R$)',
-    tag1:'Cenário 1',tag2:'Cenário 2',tag3:'Cenário 3',
-    n1:'Atual',n2:'Redução de custos',n3:'Digital',
-    unit:'Custo unit.:',tick:'Ticket:',liq:'Lucro liq./part.:',
-    see:'Ver detalhes →',
-    chart1:'Custo total por cenário',chart2:'Lucro líquido total',
-    chart3:'Faturamento histórico Summit Premier (2018–2025)',
-    legfat:'Faturamento (R$)',legpct:'% do faturamento GLN',
-    close:'✕ Fechar',leg1:'Cenário 1',leg2:'Cenário 2',leg3:'Cenário 3',
-    dh1:'Item',dh2:'Executor',dh3:'Total (R$)',dh4:'Unit. (R$)',
+    eyebrow:'Simulação de Custos', title:'Summit <span>Premier</span> 2026', sub:'Reunião Envisionar/GLN 22/06/2026',
+    inputsLbl:'Parâmetros de simulação', scLbl:'Cenários',
+    part:'Participantes', cambio:'Câmbio R$/USD', t1:'Fee C1 (R$)', t2:'Fee C2 (R$)', t3:'Fee C3 (R$)',
+    tag1:'Cenário 1', tag2:'Cenário 2', tag3:'Cenário 3',
+    n1:'Atual', n2:'Redução de custos', n3:'Digital',
+    unit:'Custo unit.', tick:'Fee', liq:'Lucro / part.', see:'Ver detalhes →',
+    ch1:'Custo total por cenário', ch2:'Lucro líquido total', ch3:'Receita total Envisionar x Summit Premier (2018–2025)',
+    legsp:'Summit Premier', legtot:'Faturamento Envisionar',
+    leg1:'Cenário 1', leg2:'Cenário 2', leg3:'Cenário 3',
+    close:'✕ Fechar', dh1:'Item', dh2:'Executor', dh3:'Total', dh4:'Unit.',
     detpre:'Detalhamento — ',
-    slbl:['Custo total','Custo unit.','Ticket','Lucro liq./part.'],
+    sl:['Custo total','Custo unit.','Fee','Lucro / part.'],
     cats:['Viagem Chicago','Nacionalização','Criação de Materiais','Impressão de Materiais','Marketing e Vendas','Relacionamento / Implementação','Custos Administrativos'],
-    catTotals:['Total Viagem Chicago','Total Nacionalização','Total Criação de Materiais','Total Impressão de Materiais','Total Marketing e Vendas','Total Relacionamento','Total Custos Administrativos'],
-    subtotal:'Subtotal',
-    resumoTitle:'Resumo comparativo — itens inclusos por cenário',
-    rhItem:'Item',rhC1:'Cenário 1',rhC2:'Cenário 2',rhC3:'Cenário 3',
-    curr:'R$'
+    catf:['Total Viagem Chicago','Total Nacionalização','Total Criação de Materiais','Total Impressão','Total Marketing e Vendas','Total Relacionamento','Total Administrativo'],
+    rtttl:'Resumo comparativo — itens inclusos',
+    rh:['Item','Cenário 1','Cenário 2','Cenário 3'],
+    sym:'R$',
+    simTitle:'Simulador de cenários',simFee:'Fee Envisionar (R$)',simRecAtual:'Receita no fee atual (R$ 139)',simRecNovo:'Receita no novo fee',simGap:'Gap de receita',simSub:'Subsídio GLN necessário',simNote:'* O subsídio inclui acréscimo de 5,93% referente a impostos.',
+    tabPauta:'Pauta',tabCenarios:'Cenários',pautaObj:'Objetivo da reunião',pautaDisc:'Pauta da Discussão',notesTitle:'Anotações',notesPlaceholder:'Anote aqui os principais tópicos discutidos...'
   },
   en:{
-    title:'Summit Premier 2026 — Cost Simulation',
-    sub:'Editable fields · Live recalculation · Data: GLN 05/20/2026',
-    part:'No. of participants',cambio:'Exchange rate (BRL/USD)',
-    ticket1:'Ticket Scenario 1 (USD)',ticket2:'Ticket Scenario 2 (USD)',ticket3:'Ticket Scenario 3 (USD)',
-    subgln:'GLN Subsidy (USD)',
-    tag1:'Scenario 1',tag2:'Scenario 2',tag3:'Scenario 3',
-    n1:'Current',n2:'Cost reduction',n3:'Digital',
-    unit:'Unit cost:',tick:'Ticket:',liq:'Net profit/part.:',
-    see:'See details →',
-    chart1:'Total cost by scenario',chart2:'Net profit total',
-    chart3:'Summit Premier historical revenue (2018–2025)',
-    legfat:'Revenue (BRL)',legpct:'% of GLN total revenue',
-    close:'✕ Close',leg1:'Scenario 1',leg2:'Scenario 2',leg3:'Scenario 3',
-    dh1:'Item',dh2:'Executor',dh3:'Total (USD)',dh4:'Unit. (USD)',
+    eyebrow:'Cost Simulation', title:'Summit <span>Premier</span> 2026', sub:'Envisionar/GLN Meeting 06/22/2026',
+    inputsLbl:'Simulation parameters', scLbl:'Scenarios',
+    part:'Participants', cambio:'Exchange rate R$/USD', t1:'Fee S1 (R$)', t2:'Fee S2 (R$)', t3:'Fee S3 (R$)',
+    tag1:'Scenario 1', tag2:'Scenario 2', tag3:'Scenario 3',
+    n1:'Current', n2:'Cost reduction', n3:'Digital',
+    unit:'Unit cost', tick:'Fee', liq:'Profit / part.', see:'See details →',
+    ch1:'Total cost by scenario', ch2:'Net profit total', ch3:'Envisionar total revenue vs Summit Premier (2018–2025)',
+    legsp:'Summit Premier', legtot:'Envisionar Revenue',
+    leg1:'Scenario 1', leg2:'Scenario 2', leg3:'Scenario 3',
+    close:'✕ Close', dh1:'Item', dh2:'Executor', dh3:'Total', dh4:'Unit.',
     detpre:'Breakdown — ',
-    slbl:['Total cost','Unit cost','Ticket','Net profit/part.'],
+    sl:['Total cost','Unit cost','Fee','Profit / part.'],
     cats:['Chicago Trip','Nationalization','Materials Creation','Materials Printing','Marketing & Sales','Relationship / Implementation','Administrative Costs'],
-    catTotals:['Total Chicago Trip','Total Nationalization','Total Materials Creation','Total Materials Printing','Total Marketing & Sales','Total Relationship','Total Administrative Costs'],
-    subtotal:'Subtotal',
-    resumoTitle:'Comparative summary — included items per scenario',
-    rhItem:'Item',rhC1:'Scenario 1',rhC2:'Scenario 2',rhC3:'Scenario 3',
-    curr:'USD'
+    catf:['Total Chicago Trip','Total Nationalization','Total Materials Creation','Total Printing','Total Marketing & Sales','Total Relationship','Total Administrative'],
+    rtttl:'Comparative summary — included items',
+    rh:['Item','Scenario 1','Scenario 2','Scenario 3'],
+    sym:'$',
+    simTitle:'Scenario Simulator',simFee:'Envisionar Fee (R$)',simRecAtual:'Revenue at current fee (R$ 139)',simRecNovo:'Revenue at new fee',simGap:'Revenue gap',simSub:'Required GLN subsidy',simNote:'* The subsidy includes a 5.93% tax surcharge.',
+    tabPauta:'Agenda',tabCenarios:'Scenarios',pautaObj:'Meeting objectives',pautaDisc:'Discussion agenda',notesTitle:'Notes',notesPlaceholder:'Note the main topics discussed here...'
   }
 };
 
-/* RESUMO DATA */
-var resumoRows=[
-  {pt:'Qtd equipe em Chicago',en:'Chicago team size',c1:'4',c2:'3',c3:'2'},
-  {pt:'Dublagem Palestras',en:'Talk dubbing',c1:'15 palestras (Stúdio A)',c2:'12 palestras (Stúdio B)',c3:'09 palestras (Stúdio B)',
-   c1en:'15 talks (Studio A)',c2en:'12 talks (Studio B)',c3en:'09 talks (Studio B)'},
-  {pt:'Materiais de Marketing',en:'Marketing materials',c1:'SIM',c2:'SIM',c3:'SIM',c1en:'YES',c2en:'YES',c3en:'YES'},
-  {pt:'Caderno Participante Impresso',en:'Printed participant booklet',c1:'SIM (colorido 64 páginas)',c2:'SIM (colorido 4 pág. + miolo 2 cores)',c3:'NÃO',
-   c1en:'YES (full color 64 pages)',c2en:'YES (color 4 pages + 2-color interior)',c3en:'NO'},
-  {pt:'Caderno Participante Digital',en:'Digital participant booklet',c1:'SIM',c2:'SIM',c3:'SIM',c1en:'YES',c2en:'YES',c3en:'YES'},
-  {pt:'Kit Participante',en:'Participant kit',c1:'Envio de Crachá e Caneta',c2:'Envio de Crachá e Caneta',c3:'NÃO',
-   c1en:'Badge & Pen delivery',c2en:'Badge & Pen delivery',c3en:'NO'},
-  {pt:'Atendimento e Suporte',en:'Support & Service',c1:'FULL',c2:'PARCIAL',c3:'Apenas Chatbot',c1en:'FULL',c2en:'PARTIAL',c3en:'Chatbot only'},
-  {pt:'Viagens e Visitas Summit',en:'Summit visits & travel',c1:'10 Locais',c2:'05 Locais',c3:'NÃO',c1en:'10 locations',c2en:'05 locations',c3en:'NO'},
-  {pt:'Fretes',en:'Shipping',c1:'SIM',c2:'SIM',c3:'NÃO',c1en:'YES',c2en:'YES',c3en:'NO'},
-  {pt:'Estoque',en:'Inventory',c1:'SIM',c2:'SIM',c3:'NÃO',c1en:'YES',c2en:'YES',c3en:'NO'},
+var ROWS=[
+  {pt:'Equipe em Chicago',en:'Chicago team',c:['4','3','2']},
+  {pt:'Dublagem palestras',en:'Talk dubbing',c:['15 (Stúdio A)','12 (Stúdio B)','9 (Stúdio B)'],ec:['15 (Studio A)','12 (Studio B)','9 (Studio B)']},
+  {pt:'Materiais de marketing',en:'Marketing materials',c:['y','y','y']},
+  {pt:'Caderno impresso',en:'Printed booklet',c:['64 pág. color','4 pág. + 2 cores','n'],ec:['64 pages color','4 pages + 2-color','n']},
+  {pt:'Caderno digital',en:'Digital booklet',c:['y','y','y']},
+  {pt:'Kit participante',en:'Participant kit',c:['Crachá + Caneta','Crachá + Caneta','n'],ec:['Badge + Pen','Badge + Pen','n']},
+  {pt:'Atendimento e suporte',en:'Support & service',c:['Full','Parcial','Chatbot'],ec:['Full','Partial','Chatbot only']},
+  {pt:'Visitas Summit',en:'Summit visits',c:['10 locais','5 locais','n'],ec:['10 locations','5 locations','n']},
+  {pt:'Fretes',en:'Shipping',c:['y','y','n']},
+  {pt:'Estoque',en:'Inventory',c:['y','y','n']},
 ];
 
-/* HISTORICAL DATA */
-var histData={
-  years:[2018,2019,2020,2021,2022,2023,2024,2025],
-  brl:[131999.80,745655.67,654548.48,293257.80,721627.53,916252.44,983918.19,1007129.81],
-  pct:[17,34,29,13,24,27,39,36]
+var YSVG='<svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="7" stroke="var(--yes)" stroke-width="1.2"/><path d="M5 8l2 2 4-4" stroke="var(--yes)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+var NSVG='<svg width="16" height="16" viewBox="0 0 16 16" fill="none"><line x1="5.5" y1="5.5" x2="10.5" y2="10.5" stroke="var(--no)" stroke-width="1.5" stroke-linecap="round"/><line x1="10.5" y1="5.5" x2="5.5" y2="10.5" stroke="var(--no)" stroke-width="1.5" stroke-linecap="round"/></svg>';
+
+var HIST={
+  y:[2018,2019,2020,2021,2022,2023,2024,2025],
+  sp:[131999.80,745655.67,654548.48,293257.80,721627.53,916252.44,983918.19,1007129.81],
+  tot:[796311.86,2203271.60,2251109.86,2297425.08,2952704.46,3420441.17,2548791.03,2804455.14]
 };
 
-/* COST DATA */
-var baseData=[
+var D=[
   {cats:[
-    {items:[['Passagem, Hospedagem e Alimentação p/ 04 Pessoas','Fornecedor',40000]]},
-    {items:[['Coordenação da Nacionalização','Cadu',4103],['Tradução e Dublagem (15 palestras)','DPN Santos',117622.8],['Revisão de Estilo','Cadu',3419.17],['Tradução Palestras: Adaptação e Legenda','DPN Santos',9720],['Tradução e Aplicação dos Slides','Cadu',1709.58],['Motion Graphics','Cadu',3000],['Masterização','Cadu',854.79],['Revisão Geral','Cadu',1282.19],['Entrega Final das Mídias','Cadu',1709.58]]},
-    {items:[['Guia de Identidade','Paulo',147.81],['Caderno Participante Impresso (Coord.)','Vinicius',7674.60],['Caderno Participante Impresso (Designer)','Paulo',4434.18],['Caderno Participante Impresso (Revisor)','Mayana',321.13],['Caderno Participante Digital','Paulo',369.52],['Fotos preletores','Paulo',147.81],['Modelo Crachá','Paulo',147.81],['Sites dos Parceiros','Paulo',147.81],['Posts Instagram','Paulo',184.76],['Stories','Paulo',147.81],['Press Release','Paulo',147.81],['Flyer','Paulo',147.81],['Folder','Paulo',147.81],['Cabeçalho Email','Paulo',147.81],['Bio dos Palestrantes','Paulo',147.81],['Guia do Summit Experience','Paulo',184.76],['Kit Identidade','Paulo',147.81],['Vídeos MKT (Invites, Promo)','Lucas Barbosa',557.49],['Vídeos MKT (Cortes)','Lucas Barbosa',253.41],['Backdrop Summit','Paulo',147.81],['Background','Paulo',73.90],['Banner Vertical','Paulo',147.81],['Sinalização Summit','Paulo',147.81],['Projeto Guia do Facilitador','Sara Macedo',10640],['Roteirização Treinamento Voluntários','Aline/Cadu/Vinicius',4625.68],['Gravação Treinamento Voluntários','Aline/Cadu/Vinicius',770.95],['Edição Treinamento Voluntários','Lucas Barbosa',304.09]]},
-    {items:[['Caderno do Participante','Gráfica Reproset',40956.12],['Crachá','AtualCard',12213.98],['Caneta','Fissare Brindes',10000]]},
-    {items:[['Coordenação Marketing Digital','Vini',6139.68],['Equipe de Vendas','Juan',23845.54],['SDR','IA',12000],['Anúncios em Vídeos','Lucas Barbosa',7298.11],['Configurações de Campanha','Lucas Barbosa',1039.26],['Tráfego Pago','Meta Business',12000]]},
-    {items:[['Coordenação do Relacionamento / CS','Aline',7837.76],['Jornada do Parceiro c/ Assessoria (Andréa)','Andréa',3931.42],['Jornada do Parceiro c/ Assessoria (Nicoly)','Nicoly',15659.35],['Suporte aos Eventos','Sara',733.56],['Viagens e Visitas aos Summits','Eq. Envisionar',50000],['Gestão dos Summits Segmentados','Aline',2165.13]]},
-    {items:[['Softwares e serviços digitais','-',12900],['Fretes (Correios e Transportadoras)','-',22000],['Estoque','-',10500],['Aluguel Proporcional Escritório','-',32160],['Taxas bancárias','-',3000],['Régua de Cobrança','Carol',1013.63],['Impostos','-',65941.60],['Subsídio GLN (Imposto)','-',0]]}
+    {i:[['Passagem, Hospedagem e Alimentação p/ 04 Pessoas','Fornecedor',40000]]},
+    {i:[['Coordenação da Nacionalização','Cadu',4103],['Tradução e Dublagem (15 palestras)','DPN Santos',117622.8],['Revisão de Estilo','Cadu',3419.17],['Tradução: Adaptação e Legenda','DPN Santos',9720],['Tradução e Aplicação dos Slides','Cadu',1709.58],['Motion Graphics','Cadu',3000],['Masterização','Cadu',854.79],['Revisão Geral','Cadu',1282.19],['Entrega Final das Mídias','Cadu',1709.58]]},
+    {i:[['Guia de Identidade','Paulo',147.81],['Caderno Impresso (Coord.)','Vinicius',7674.60],['Caderno Impresso (Designer)','Paulo',4434.18],['Caderno Impresso (Revisor)','Mayana',321.13],['Caderno Digital','Paulo',369.52],['Fotos preletores','Paulo',147.81],['Modelo Crachá','Paulo',147.81],['Sites dos Parceiros','Paulo',147.81],['Posts Instagram','Paulo',184.76],['Stories','Paulo',147.81],['Press Release','Paulo',147.81],['Flyer','Paulo',147.81],['Folder','Paulo',147.81],['Cabeçalho Email','Paulo',147.81],['Bio dos Palestrantes','Paulo',147.81],['Guia do Summit Experience','Paulo',184.76],['Kit Identidade','Paulo',147.81],['Vídeos MKT (Invites, Promo)','Lucas Barbosa',557.49],['Vídeos MKT (Cortes)','Lucas Barbosa',253.41],['Backdrop Summit','Paulo',147.81],['Background','Paulo',73.90],['Banner Vertical','Paulo',147.81],['Sinalização Summit','Paulo',147.81],['Guia do Facilitador','Sara Macedo',10640],['Roteirização Treinamento','Aline/Cadu/Vinicius',4625.68],['Gravação Treinamento','Aline/Cadu/Vinicius',770.95],['Edição Treinamento','Lucas Barbosa',304.09]]},
+    {i:[['Caderno do Participante','Gráfica Reproset',40956.12],['Crachá','AtualCard',12213.98],['Caneta','Fissare Brindes',10000]]},
+    {i:[['Coordenação Marketing Digital','Vini',6139.68],['Equipe de Vendas','Juan',23845.54],['SDR','IA',12000],['Anúncios em Vídeos','Lucas Barbosa',7298.11],['Configurações de Campanha','Lucas Barbosa',1039.26],['Tráfego Pago','Meta Business',12000]]},
+    {i:[['Coordenação do Relacionamento / CS','Aline',7837.76],['Jornada do Parceiro (Andréa)','Andréa',3931.42],['Jornada do Parceiro (Nicoly)','Nicoly',15659.35],['Suporte aos Eventos','Sara',733.56],['Viagens e Visitas aos Summits','Eq. Envisionar',50000],['Gestão dos Summits','Aline',2165.13]]},
+    {i:[['Softwares e serviços digitais','-',12900],['Fretes (Correios e Transportadoras)','-',22000],['Estoque','-',10500],['Aluguel Proporcional Escritório','-',32160],['Taxas bancárias','-',3000],['Régua de Cobrança','Carol',1013.63],['Impostos','-',65941.60],['Subsídio GLN (Imposto)','-',0]]}
   ]},
   {cats:[
-    {items:[['Passagem, Hospedagem e Alimentação p/ 03 Pessoas','Fornecedor',30000]]},
-    {items:[['Coordenação da Nacionalização','Cadu',4103],['Tradução, Dublagem e Legenda (12 palestras)','AudioNews',58500],['Revisão de Estilo','Cadu',3419.17],['Tradução Palestras: Adaptação e Legenda','AudioNews',0],['Tradução e Aplicação dos Slides','Lucas B.',506.81],['Motion Graphics','-',0],['Masterização','Lucas B.',253.41],['Revisão Geral','Cadu',1282.19],['Entrega Final das Mídias','Cadu',1709.58]]},
-    {items:[['Guia de Identidade','Paulo',147.81],['Caderno Participante Impresso (Coord.)','Vinicius',7674.60],['Caderno Participante Impresso (Designer)','Paulo',4434.18],['Caderno Participante Impresso (Revisor)','Mayana',321.13],['Caderno Participante Digital','Paulo',369.52],['Fotos preletores','Paulo',147.81],['Modelo/Tradução Crachá','Paulo',147.81],['Sites dos Parceiros','Paulo',147.81],['Posts Instagram','Paulo',184.76],['Stories','Paulo',147.81],['Press Release','Paulo',147.81],['Flyer','Paulo',147.81],['Folder','Paulo',147.81],['Cabeçalho Email','Paulo',147.81],['Bio dos Palestrantes','Paulo',147.81],['Guia do Summit Experience','Paulo',184.76],['Kit Identidade','Paulo',147.81],['Vídeos MKT (Invites, Promo)','Lucas Barbosa',557.49],['Vídeos MKT (Cortes)','Lucas Barbosa',253.41],['Backdrop Summit','Paulo',147.81],['Background','Paulo',73.90],['Banner Vertical','Paulo',147.81],['Sinalização Summit','Paulo',147.81],['Tradução Guia do Facilitador','IA + Humano',3000],['Roteirização Treinamento Voluntários','Aline/Cadu/Vinicius',4625.68],['Gravação Treinamento Voluntários','Aline/Cadu/Vinicius',770.95],['Edição Treinamento Voluntários','Lucas Barbosa',304.09]]},
-    {items:[['Caderno do Participante (02 Cores)','Gráfica Reproset',28669.28],['Crachá','AtualCard',12213.98],['Caneta','Fissare Brindes',10000]]},
-    {items:[['Coordenação Marketing Digital','Vini',6139.68],['Equipe de Vendas','Juan',23845.54],['SDR','IA',12000],['Anúncios em Vídeos','Lucas Barbosa',7298.11],['Configurações de Campanha','Lucas Barbosa',1039.26],['Tráfego Pago','Meta Business',12000],['Desenvolvimento de ChatBot','Terceirizado',10000],['Novo Vendedor','Novo Vendedor',15131.64]]},
-    {items:[['Coordenação do Relacionamento / CS','Aline',3918.88],['Jornada do Parceiro c/ Assessoria (Andréa)','Andréa',8297.25],['Jornada do Parceiro c/ Assessoria (Nicoly)','Nicoly',7829.68],['Suporte aos Eventos','Sara',366.78],['Viagens e Visitas aos Summits','Eq. Envisionar',12500],['Gestão dos Summits Segmentados','Aline',1082.56]]},
-    {items:[['Softwares e serviços digitais','-',12900],['Fretes (Correios e Transportadoras)','-',22000],['Estoque','-',10500],['Aluguel Proporcional Escritório','-',32160],['Taxas bancárias','-',3000],['Régua de Cobrança','Carol',1013.63],['Impostos','-',42696],['Subsídio GLN (Imposto)','-',0]]}
+    {i:[['Passagem, Hospedagem e Alimentação p/ 03 Pessoas','Fornecedor',30000]]},
+    {i:[['Coordenação da Nacionalização','Cadu',4103],['Tradução, Dublagem e Legenda (12 palestras)','AudioNews',58500],['Revisão de Estilo','Cadu',3419.17],['Tradução: Adaptação e Legenda','AudioNews',0],['Tradução e Aplicação dos Slides','Lucas B.',506.81],['Motion Graphics','-',0],['Masterização','Lucas B.',253.41],['Revisão Geral','Cadu',1282.19],['Entrega Final das Mídias','Cadu',1709.58]]},
+    {i:[['Guia de Identidade','Paulo',147.81],['Caderno Impresso (Coord.)','Vinicius',7674.60],['Caderno Impresso (Designer)','Paulo',4434.18],['Caderno Impresso (Revisor)','Mayana',321.13],['Caderno Digital','Paulo',369.52],['Fotos preletores','Paulo',147.81],['Modelo/Tradução Crachá','Paulo',147.81],['Sites dos Parceiros','Paulo',147.81],['Posts Instagram','Paulo',184.76],['Stories','Paulo',147.81],['Press Release','Paulo',147.81],['Flyer','Paulo',147.81],['Folder','Paulo',147.81],['Cabeçalho Email','Paulo',147.81],['Bio dos Palestrantes','Paulo',147.81],['Guia do Summit Experience','Paulo',184.76],['Kit Identidade','Paulo',147.81],['Vídeos MKT (Invites, Promo)','Lucas Barbosa',557.49],['Vídeos MKT (Cortes)','Lucas Barbosa',253.41],['Backdrop Summit','Paulo',147.81],['Background','Paulo',73.90],['Banner Vertical','Paulo',147.81],['Sinalização Summit','Paulo',147.81],['Tradução Guia do Facilitador','IA + Humano',3000],['Roteirização Treinamento','Aline/Cadu/Vinicius',4625.68],['Gravação Treinamento','Aline/Cadu/Vinicius',770.95],['Edição Treinamento','Lucas Barbosa',304.09]]},
+    {i:[['Caderno (02 Cores)','Gráfica Reproset',28669.28],['Crachá','AtualCard',12213.98],['Caneta','Fissare Brindes',10000]]},
+    {i:[['Coordenação Marketing Digital','Vini',6139.68],['Equipe de Vendas','Juan',23845.54],['SDR','IA',12000],['Anúncios em Vídeos','Lucas Barbosa',7298.11],['Configurações de Campanha','Lucas Barbosa',1039.26],['Tráfego Pago','Meta Business',12000],['Desenvolvimento de ChatBot','Terceirizado',10000],['Novo Vendedor','Novo Vendedor',15131.64]]},
+    {i:[['Coordenação do Relacionamento / CS','Aline',3918.88],['Jornada do Parceiro (Andréa)','Andréa',8297.25],['Jornada do Parceiro (Nicoly)','Nicoly',7829.68],['Suporte aos Eventos','Sara',366.78],['Viagens e Visitas aos Summits','Eq. Envisionar',12500],['Gestão dos Summits','Aline',1082.56]]},
+    {i:[['Softwares e serviços digitais','-',12900],['Fretes (Correios e Transportadoras)','-',22000],['Estoque','-',10500],['Aluguel Proporcional Escritório','-',32160],['Taxas bancárias','-',3000],['Régua de Cobrança','Carol',1013.63],['Impostos','-',42696],['Subsídio GLN (Imposto)','-',0]]}
   ]},
   {cats:[
-    {items:[['Passagem, Hospedagem e Alimentação p/ 02 Pessoas','Fornecedor',20000]]},
-    {items:[['Coordenação da Nacionalização','Cadu',4103],['Tradução, Dublagem e Legenda (09 palestras)','AudioNews',45000],['Revisão de Estilo','Cadu',3419.17],['Tradução Palestras: Adaptação e Legenda','AudioNews',0],['Tradução e Aplicação dos Slides','Lucas B.',506.81],['Motion Graphics','-',0],['Masterização','Lucas B.',253.41],['Revisão Geral','Cadu',1282.19],['Entrega Final das Mídias','Cadu',1709.58]]},
-    {items:[['Guia de Identidade','Paulo',147.81],['Caderno Participante Impresso (Coord.)','Vinicius',7674.60],['Caderno Participante Impresso (Designer)','Paulo',4434.18],['Caderno Participante Impresso (Revisor)','Mayana',321.13],['Caderno Participante Digital (Digital)','Paulo',0],['Fotos preletores','Paulo',147.81],['Modelo/Tradução Crachá','Paulo',147.81],['Sites dos Parceiros','Paulo',147.81],['Posts Instagram','Paulo',184.76],['Stories','Paulo',147.81],['Press Release','Paulo',147.81],['Flyer','Paulo',147.81],['Folder','Paulo',147.81],['Cabeçalho Email','Paulo',147.81],['Bio dos Palestrantes','Paulo',147.81],['Guia do Summit Experience','Paulo',184.76],['Kit Identidade','Paulo',147.81],['Vídeos MKT (Invites, Promo)','Lucas Barbosa',557.49],['Vídeos MKT (Cortes)','Lucas Barbosa',253.41],['Backdrop Summit','Paulo',147.81],['Background','Paulo',73.90],['Banner Vertical','Paulo',147.81],['Sinalização Summit','Paulo',147.81],['Tradução Guia do Facilitador','IA + Humano',3000],['Roteirização Treinamento Voluntários','Aline/Cadu/Vinicius',4625.68],['Gravação Treinamento Voluntários','Aline/Cadu/Vinicius',770.95],['Edição Treinamento Voluntários','Lucas Barbosa',304.09]]},
-    {items:[['Caderno do Participante (Digital)','-',0],['Crachá (fornecimento modelo)','Atua Card',0],['Caneta','Fissare Brindes',0]]},
-    {items:[['Coordenação Marketing Digital','Vini',6139.68],['Equipe de Vendas','-',0],['SDR','IA',12000],['Anúncios em Vídeos','Lucas Barbosa',7298.11],['Configurações de Campanha','Lucas Barbosa',1039.26],['Tráfego Pago','Meta Business',12000],['Desenvolvimento de ChatBot','Terceirizado',10000],['Novo Vendedor','Novo Vendedor',15131.64]]},
-    {items:[['Coordenação do Relacionamento / CS','Aline',2612.59],['Jornada do Parceiro c/ Assessoria (Andréa)','Andréa',5531.50],['Jornada do Parceiro c/ Assessoria (Nicoly)','Nicoly',5219.78],['Suporte aos Eventos','Sara',244.52],['Viagens e Visitas aos Summits','Eq. Envisionar',0],['Gestão dos Summits Segmentados','Aline',721.71]]},
-    {items:[['Softwares e serviços digitais','-',12900],['Fretes (Correios e Transportadoras)','-',0],['Estoque','-',0],['Aluguel Proporcional Escritório','-',32160],['Taxas bancárias','-',3000],['Régua de Cobrança','Carol',1013.63],['Impostos','-',65941.60],['Subsídio GLN (Imposto)','-',0]]}
+    {i:[['Passagem, Hospedagem e Alimentação p/ 02 Pessoas','Fornecedor',20000]]},
+    {i:[['Coordenação da Nacionalização','Cadu',4103],['Tradução, Dublagem e Legenda (09 palestras)','AudioNews',45000],['Revisão de Estilo','Cadu',3419.17],['Tradução: Adaptação e Legenda','AudioNews',0],['Tradução e Aplicação dos Slides','Lucas B.',506.81],['Motion Graphics','-',0],['Masterização','Lucas B.',253.41],['Revisão Geral','Cadu',1282.19],['Entrega Final das Mídias','Cadu',1709.58]]},
+    {i:[['Guia de Identidade','Paulo',147.81],['Caderno Impresso (Coord.)','Vinicius',7674.60],['Caderno Impresso (Designer)','Paulo',4434.18],['Caderno Impresso (Revisor)','Mayana',321.13],['Caderno Digital','Paulo',0],['Fotos preletores','Paulo',147.81],['Modelo/Tradução Crachá','Paulo',147.81],['Sites dos Parceiros','Paulo',147.81],['Posts Instagram','Paulo',184.76],['Stories','Paulo',147.81],['Press Release','Paulo',147.81],['Flyer','Paulo',147.81],['Folder','Paulo',147.81],['Cabeçalho Email','Paulo',147.81],['Bio dos Palestrantes','Paulo',147.81],['Guia do Summit Experience','Paulo',184.76],['Kit Identidade','Paulo',147.81],['Vídeos MKT (Invites, Promo)','Lucas Barbosa',557.49],['Vídeos MKT (Cortes)','Lucas Barbosa',253.41],['Backdrop Summit','Paulo',147.81],['Background','Paulo',73.90],['Banner Vertical','Paulo',147.81],['Sinalização Summit','Paulo',147.81],['Tradução Guia do Facilitador','IA + Humano',3000],['Roteirização Treinamento','Aline/Cadu/Vinicius',4625.68],['Gravação Treinamento','Aline/Cadu/Vinicius',770.95],['Edição Treinamento','Lucas Barbosa',304.09]]},
+    {i:[['Caderno (Digital)','-',0],['Crachá (modelo)','Atua Card',0],['Caneta','-',0]]},
+    {i:[['Coordenação Marketing Digital','Vini',6139.68],['Equipe de Vendas','-',0],['SDR','IA',12000],['Anúncios em Vídeos','Lucas Barbosa',7298.11],['Configurações de Campanha','Lucas Barbosa',1039.26],['Tráfego Pago','Meta Business',12000],['Desenvolvimento de ChatBot','Terceirizado',10000],['Novo Vendedor','Novo Vendedor',15131.64]]},
+    {i:[['Coordenação do Relacionamento / CS','Aline',2612.59],['Jornada do Parceiro (Andréa)','Andréa',5531.50],['Jornada do Parceiro (Nicoly)','Nicoly',5219.78],['Suporte aos Eventos','Sara',244.52],['Viagens e Visitas aos Summits','Eq. Envisionar',0],['Gestão dos Summits','Aline',721.71]]},
+    {i:[['Softwares e serviços digitais','-',12900],['Fretes','-',0],['Estoque','-',0],['Aluguel Proporcional Escritório','-',32160],['Taxas bancárias','-',3000],['Régua de Cobrança','Carol',1013.63],['Impostos','-',65941.60],['Subsídio GLN (Imposto)','-',0]]}
   ]}
 ];
-
-var editableData=JSON.parse(JSON.stringify(baseData));
+var ED=JSON.parse(JSON.stringify(D));
 var barChart,profitChart,histChart;
 
-function getCambio(){return parseFloat(document.getElementById('inp-cambio').value)||5.10;}
-function getPart(){return parseFloat(document.getElementById('inp-part').value)||8000;}
+/* ── ITEM TRANSLATION MAP ── */
+var ITEM_EN={
+'Passagem, Hospedagem e Alimentação p/ 04 Pessoas':'Airfare, Lodging & Meals for 04 People',
+'Passagem, Hospedagem e Alimentação p/ 03 Pessoas':'Airfare, Lodging & Meals for 03 People',
+'Passagem, Hospedagem e Alimentação p/ 02 Pessoas':'Airfare, Lodging & Meals for 02 People',
+'Coordenação da Nacionalização':'Nationalization Coordination',
+'Tradução e Dublagem (15 palestras)':'Translation & Dubbing (15 talks)',
+'Tradução, Dublagem e Legenda (12 palestras)':'Translation, Dubbing & Subtitles (12 talks)',
+'Tradução, Dublagem e Legenda (09 palestras)':'Translation, Dubbing & Subtitles (09 talks)',
+'Revisão de Estilo':'Style Review',
+'Tradução: Adaptação e Legenda':'Translation: Adaptation & Subtitles',
+'Tradução e Aplicação dos Slides':'Slide Translation & Layout',
+'Motion Graphics':'Motion Graphics',
+'Masterização':'Mastering',
+'Revisão Geral':'General Review',
+'Entrega Final das Mídias':'Final Media Delivery',
+'Guia de Identidade':'Identity Guide',
+'Caderno Impresso (Coord.)':'Printed Booklet (Coord.)',
+'Caderno Impresso (Designer)':'Printed Booklet (Designer)',
+'Caderno Impresso (Revisor)':'Printed Booklet (Reviewer)',
+'Caderno Digital':'Digital Booklet',
+'Fotos preletores':'Speaker Photos',
+'Modelo Crachá':'Badge Template',
+'Modelo/Tradução Crachá':'Badge Template/Translation',
+'Sites dos Parceiros':'Partner Websites',
+'Posts Instagram':'Instagram Posts',
+'Stories':'Stories',
+'Press Release':'Press Release',
+'Flyer':'Flyer','Folder':'Folder',
+'Cabeçalho Email':'Email Header',
+'Bio dos Palestrantes':'Speaker Bios',
+'Guia do Summit Experience':'Summit Experience Guide',
+'Kit Identidade':'Identity Kit',
+'Vídeos MKT (Invites, Promo)':'Marketing Videos (Invites, Promo)',
+'Vídeos MKT (Cortes)':'Marketing Videos (Clips)',
+'Backdrop Summit':'Summit Backdrop',
+'Background':'Background',
+'Banner Vertical':'Vertical Banner',
+'Sinalização Summit':'Summit Signage',
+'Guia do Facilitador':'Facilitator Guide',
+'Tradução Guia do Facilitador':'Facilitator Guide Translation',
+'Roteirização Treinamento':'Training Scriptwriting',
+'Gravação Treinamento':'Training Recording',
+'Edição Treinamento':'Training Editing',
+'Caderno do Participante':'Participant Booklet',
+'Caderno (02 Cores)':'Booklet (2 Colors)',
+'Caderno (Digital)':'Booklet (Digital)',
+'Crachá':'Badge',
+'Crachá (modelo)':'Badge (template)',
+'Caneta':'Pen',
+'Coordenação Marketing Digital':'Digital Marketing Coordination',
+'Equipe de Vendas':'Sales Team',
+'SDR':'SDR',
+'Anúncios em Vídeos':'Video Ads',
+'Configurações de Campanha':'Campaign Setup',
+'Tráfego Pago':'Paid Traffic',
+'Desenvolvimento de ChatBot':'ChatBot Development',
+'Novo Vendedor':'New Salesperson',
+'Coordenação do Relacionamento / CS':'Relationship / CS Coordination',
+'Jornada do Parceiro (Andréa)':'Partner Journey (Andréa)',
+'Jornada do Parceiro (Nicoly)':'Partner Journey (Nicoly)',
+'Suporte aos Eventos':'Event Support',
+'Viagens e Visitas aos Summits':'Summit Visits & Travel',
+'Gestão dos Summits':'Summit Management',
+'Softwares e serviços digitais':'Software & Digital Services',
+'Fretes (Correios e Transportadoras)':'Shipping (Mail & Carriers)',
+'Fretes':'Shipping',
+'Estoque':'Inventory',
+'Aluguel Proporcional Escritório':'Office Rent (Proportional)',
+'Taxas bancárias':'Bank Fees',
+'Régua de Cobrança':'Billing Automation',
+'Impostos':'Taxes',
+'Subsídio GLN (Imposto)':'GLN Subsidy (Tax)',
+'Fornecedor':'Vendor'
+};
 
-function fmtVal(v){
-  var cambio=getCambio();
-  if(lang==='en') v=v/cambio;
-  return (lang==='en'?'$ ':'R$ ')+Math.round(v).toLocaleString(lang==='en'?'en-US':'pt-BR');
-}
-function fmtValUnit(v){
-  var cambio=getCambio();
-  if(lang==='en') v=v/cambio;
-  return (lang==='en'?'$ ':'R$ ')+v.toFixed(2).replace('.',lang==='en'?'.':',');
-}
-function fmtBRL(v){return 'R$ '+Math.round(v).toLocaleString('pt-BR')}
-function fmtUSD(v,cambio){return 'USD '+Math.round(v/cambio).toLocaleString('pt-BR')}
+/* ── HELPERS ── */
+function cb(){return parseFloat(document.getElementById('inp-cambio').value)||5.10}
+function np(){return parseFloat(document.getElementById('inp-part').value)||8000}
+function gln(){return 0}
+function tickets(){return [parseFloat(document.getElementById('inp-t1').value)||139,parseFloat(document.getElementById('inp-t2').value)||139,parseFloat(document.getElementById('inp-t3').value)||139]}
+function getTotal(s){return ED[s].cats.reduce(function(a,c){return a+c.i.reduce(function(b,it){return b+it[2]},0)},0)}
+function totAdj(s){return Math.max(0,getTotal(s)-gln())}
+function sym(){return lang==='en'?'$ ':'R$ '}
+function lc(){return lang==='en'?'en-US':'pt-BR'}
+function fmtV(brl){var v=lang==='en'?brl/cb():brl; return sym()+Math.round(v).toLocaleString(lc())}
+function fmtU(brl){var v=lang==='en'?brl/cb():brl; return sym()+v.toFixed(2)}
+function fmtTick(brl_ticket){var v=lang==='en'?brl_ticket/cb():brl_ticket; return sym()+v.toFixed(2)}
+function axK(v){return sym()+Math.round(v/1000)+'k'}
 
-function getTotal(s){
-  return editableData[s].cats.reduce(function(acc,cat){
-    return acc+cat.items.reduce(function(a,it){return a+it[2]},0);
-  },0);
-}
-
-function recalc(){
-  var part=getPart();
-  var cambio=getCambio();
-  var tickets=[
-    parseFloat(document.getElementById('inp-t1').value)||139,
-    parseFloat(document.getElementById('inp-t2').value)||90,
-    parseFloat(document.getElementById('inp-t3').value)||139
-  ];
-  var gln=parseFloat(document.getElementById('inp-gln').value)||0;
-  var totals=[getTotal(0),getTotal(1),getTotal(2)];
-  var totalsAdj=totals.map(function(t){return Math.max(0,t-gln)});
-
-  for(var i=0;i<3;i++){
-    var brl=totalsAdj[i];
-    var unit=brl/part;
-    var tick=lang==='en'?tickets[i]/cambio:tickets[i];
-    var unitDisp=lang==='en'?unit/cambio:unit;
-    var liq=tick-unitDisp;
-    var sym=lang==='en'?'$ ':'R$ ';
-    document.getElementById('sc-brl-'+i).textContent=(lang==='en'?'$ '+Math.round(brl/cambio).toLocaleString('en-US'):'R$ '+Math.round(brl).toLocaleString('pt-BR'));
-    document.getElementById('sc-usd-'+i).textContent=(lang==='en'?'BRL '+Math.round(brl).toLocaleString('en-US'):'USD '+Math.round(brl/cambio).toLocaleString('pt-BR'));
-    document.getElementById('sc-unit-'+i).textContent=sym+unitDisp.toFixed(2);
-    document.getElementById('sc-tick-'+i).textContent=sym+tick.toFixed(2);
-    var liqEl=document.getElementById('sc-liq-'+i);
-    liqEl.textContent=sym+liq.toFixed(2);
-    liqEl.style.color=liq>=0?'#3B6D11':'#A32D2D';
+/* ── TAX AUTO-CALC ── */
+/* Tax = ticket × participants × 5.93% — stored in BRL in ED[s].cats[6].i[6][2] */
+var TAX_RATE=0.0593;
+var TAX_CAT=6, TAX_IDX=6; /* Custos Administrativos, penúltima linha = Impostos */
+function updateTax(){
+  var p=np(), tix=tickets();
+  for(var s=0;s<3;s++){
+    ED[s].cats[TAX_CAT].i[TAX_IDX][2]=tix[s]*p*TAX_RATE;
   }
-  updateCharts(totalsAdj,tickets,part,cambio);
+}
+
+/* ── SUBSIDY SIMULATOR ── */
+function calcSim(){
+  var p=np(), c=cb();
+  var ticketAtual=parseFloat(document.getElementById('inp-t1').value)||139;
+  var fee=parseFloat(document.getElementById('sim-fee').value)||0;
+  var recAtual=ticketAtual*p;
+  var recNovo=fee*p;
+  var gap=recAtual-recNovo;
+  if(gap<0)gap=0;
+  var subsidio=gap*(1+TAX_RATE);
+  var s=sym(), l=lc();
+  function fmt(v){var d=lang==='en'?v/c:v; return s+Math.round(d).toLocaleString(l)}
+  document.getElementById('sim-rec-atual').textContent=fmt(recAtual);
+  document.getElementById('sim-rec-novo').textContent=fmt(recNovo);
+  document.getElementById('sim-gap').textContent=fmt(gap);
+  document.getElementById('sim-sub').textContent=fmt(subsidio);
+}
+
+/* ── MAIN RECALC ── */
+function recalc(){
+  updateTax();
+  var p=np(), c=cb(), tix=tickets(), gl=gln();
+  for(var i=0;i<3;i++){
+    var brlCost=totAdj(i);
+    var unitBRL=brlCost/p;
+    var tickBRL=tix[i]; /* ticket is always stored in R$ */
+    var profitBRL=tickBRL-unitBRL;
+    /* display in current lang */
+    document.getElementById('sc-main-'+i).textContent=fmtV(brlCost);
+    document.getElementById('sc-alt-'+i).textContent=lang==='en'?'R$ '+Math.round(brlCost).toLocaleString('pt-BR'):'USD '+Math.round(brlCost/c).toLocaleString('pt-BR');
+    document.getElementById('sc-unit-'+i).textContent=fmtU(unitBRL);
+    document.getElementById('sc-tick-'+i).textContent=fmtTick(tickBRL);
+    var liqEl=document.getElementById('sc-liq-'+i);
+    liqEl.textContent=fmtTick(profitBRL);
+    liqEl.style.color=profitBRL>=0?'var(--accent2)':'var(--danger)';
+  }
+  refreshCharts();
+  buildResumo();
   if(document.getElementById('detail-panel').classList.contains('open')) renderDetail(currentScene);
+  calcSim();
+  buildHistSummary();
 }
 
-function updateCharts(totals,tickets,part,cambio){
-  var labels=lang==='pt'?['Cenário 1','Cenário 2','Cenário 3']:['Scenario 1','Scenario 2','Scenario 3'];
-  var profits=totals.map(function(t,i){return (tickets[i]-t/part)*part});
-  var dispTotals=lang==='en'?totals.map(function(v){return Math.round(v/cambio)}):totals.map(function(v){return Math.round(v)});
-  var dispProfits=lang==='en'?profits.map(function(v){return Math.round(v/cambio)}):profits.map(function(v){return Math.round(v)});
-  if(barChart){barChart.data.labels=labels;barChart.data.datasets[0].data=dispTotals;barChart.update();}
-  if(profitChart){profitChart.data.labels=labels;profitChart.data.datasets[0].data=dispProfits;profitChart.data.datasets[0].backgroundColor=dispProfits.map(function(v){return v>=0?'rgba(59,109,17,0.75)':'rgba(163,45,45,0.75)'});profitChart.update();}
+/* ── CHARTS ── */
+function gcol(){
+  var dk=document.documentElement.getAttribute('data-theme')==='dark';
+  return{grid:dk?'rgba(255,255,255,0.06)':'rgba(0,0,0,0.05)',txt:dk?'#5A5856':'#9B9890'};
 }
-
+function mkScales(yid){
+  var c=gcol();
+  return{
+    y:{id:yid||'y',ticks:{callback:axK,color:c.txt,font:{family:'Inter',size:10}},grid:{color:c.grid},border:{display:false}},
+    x:{ticks:{color:c.txt,font:{family:'Inter',size:10}},grid:{display:false},border:{display:false}}
+  };
+}
 function initCharts(){
-  var cambio=getCambio();
-  var totals=[getTotal(0),getTotal(1),getTotal(2)];
-  var labels=['Cenário 1','Cenário 2','Cenário 3'];
-  var profits=totals.map(function(t,i){var tix=[139,90,139];return (tix[i]-t/8000)*8000});
-
+  var c=gcol();
   barChart=new Chart(document.getElementById('barChart'),{
     type:'bar',
-    data:{labels:labels,datasets:[{label:'Total',data:totals.map(function(v){return Math.round(v)}),backgroundColor:['rgba(24,95,165,0.75)','rgba(59,109,17,0.75)','rgba(186,117,23,0.75)'],borderWidth:0,borderRadius:4}]},
-    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:function(c){var sym=lang==='en'?'$ ':'R$ ';var val=c.parsed.y;return sym+val.toLocaleString(lang==='en'?'en-US':'pt-BR')}}}},scales:{y:{ticks:{callback:function(v){return (lang==='en'?'$ ':'R$ ')+Math.round(v/1000)+'k'}},grid:{color:'rgba(0,0,0,0.05)'}},x:{grid:{display:false}}}}
+    data:{labels:['','',''],datasets:[{data:[0,0,0],backgroundColor:['rgba(27,79,216,.8)','rgba(5,150,105,.8)','rgba(217,119,6,.8)'],borderWidth:0,borderRadius:6,borderSkipped:false}]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:function(ctx){return sym()+Math.abs(ctx.parsed.y).toLocaleString(lc())}}}},scales:mkScales()}
   });
-
   profitChart=new Chart(document.getElementById('profitChart'),{
     type:'bar',
-    data:{labels:labels,datasets:[{label:'Lucro',data:profits.map(function(v){return Math.round(v)}),backgroundColor:profits.map(function(v){return v>=0?'rgba(59,109,17,0.75)':'rgba(163,45,45,0.75)'}),borderWidth:0,borderRadius:4}]},
-    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:function(c){var sym=lang==='en'?'$ ':'R$ ';var val=c.parsed.y;return sym+val.toLocaleString(lang==='en'?'en-US':'pt-BR')}}}},scales:{y:{ticks:{callback:function(v){return (lang==='en'?'$ ':'R$ ')+Math.round(v/1000)+'k'}},grid:{color:'rgba(0,0,0,0.05)'}},x:{grid:{display:false}}}}
+    data:{labels:['','',''],datasets:[{data:[0,0,0],backgroundColor:['rgba(5,150,105,.75)','rgba(5,150,105,.75)','rgba(5,150,105,.75)'],borderWidth:0,borderRadius:6,borderSkipped:false}]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:function(ctx){return sym()+Math.round(ctx.parsed.y).toLocaleString(lc())}}}},scales:mkScales()}
   });
-
+  /* compute "other" revenue = total - summit */
+  /* custom plugin to draw % and values on bars */
+  var histLabelPlugin={
+    id:'histLabels',
+    afterDraw:function(chart){
+      var ctx=chart.ctx;
+      var spDS=chart.getDatasetMeta(1); /* Summit Premier */
+      var totDS=chart.getDatasetMeta(0); /* Total */
+      spDS.data.forEach(function(bar,i){
+        var pct=((HIST.sp[i]/HIST.tot[i])*100).toFixed(0)+'%';
+        var valBRL=HIST.sp[i];
+        var valDisp=lang==='en'?valBRL/cb():valBRL;
+        var valTxt=sym()+(valDisp>=1000000?(valDisp/1000000).toFixed(1)+'M':Math.round(valDisp/1000)+'k');
+        var totBar=totDS.data[i];
+        /* % label on top of total bar */
+        ctx.save();
+        ctx.font='700 11px Sora,sans-serif';
+        ctx.fillStyle=getComputedStyle(document.documentElement).getPropertyValue('--accent').trim()||'#1B4FD8';
+        ctx.textAlign='center';
+        ctx.fillText(pct,totBar.x,totBar.y-8);
+        /* SP value inside the dark bar */
+        var barH=bar.height||0;
+        if(barH>18){
+          ctx.font='600 9px Inter,sans-serif';
+          ctx.fillStyle='rgba(255,255,255,.9)';
+          ctx.fillText(valTxt,bar.x,bar.y+bar.height/2+3);
+        }
+        ctx.restore();
+      });
+    }
+  };
   histChart=new Chart(document.getElementById('histChart'),{
     type:'bar',
-    data:{
-      labels:histData.years,
-      datasets:[
-        {type:'bar',label:'Faturamento (R$)',data:histData.brl,backgroundColor:'rgba(24,95,165,0.7)',borderWidth:0,borderRadius:4,yAxisID:'y'},
-        {type:'line',label:'% faturamento GLN',data:histData.pct,borderColor:'#BA7517',backgroundColor:'rgba(186,117,23,0.12)',borderWidth:2,pointBackgroundColor:'#BA7517',pointRadius:5,tension:0.3,yAxisID:'y1'}
-      ]
-    },
+    data:{labels:HIST.y,datasets:[
+      /* Background: full Envisionar revenue */
+      {label:'Faturamento',data:HIST.tot.slice(),backgroundColor:'rgba(27,79,216,.3)',borderColor:'rgba(27,79,216,.4)',borderWidth:1,borderRadius:6,borderSkipped:false,categoryPercentage:0.65,barPercentage:1,order:2},
+      /* Foreground: Summit Premier (narrower, overlaid) */
+      {label:'Summit Premier',data:HIST.sp.slice(),backgroundColor:'rgba(27,79,216,.85)',borderWidth:0,borderRadius:4,borderSkipped:false,categoryPercentage:0.65,barPercentage:0.55,order:1}
+    ]},
+    plugins:[histLabelPlugin],
     options:{
       responsive:true,maintainAspectRatio:false,
-      plugins:{legend:{display:false},tooltip:{callbacks:{label:function(c){if(c.datasetIndex===0){var sym=lang==='en'?'$ ':'R$ ';return sym+c.parsed.y.toLocaleString(lang==='en'?'en-US':'pt-BR')};return c.parsed.y+'%'}}}},
+      layout:{padding:{top:24}},
+      plugins:{legend:{display:false},tooltip:{
+        callbacks:{
+          label:function(ctx){
+            var c2=cb();
+            var isSP=ctx.datasetIndex===1;
+            var names=isSP?'Summit Premier':(lang==='en'?'Envisionar Revenue':'Faturamento Envisionar');
+            var raw=ctx.parsed.y;
+            var disp=lang==='en'?raw/c2:raw;
+            var pct=isSP?' ('+((HIST.sp[ctx.dataIndex]/HIST.tot[ctx.dataIndex])*100).toFixed(0)+'%)':'';
+            return names+': '+sym()+Math.round(disp).toLocaleString(lc())+pct;
+          }
+        }
+      }},
       scales:{
-        y:{position:'left',ticks:{callback:function(v){return (lang==='en'?'$ ':'R$ ')+Math.round(v/1000)+'k'}},grid:{color:'rgba(0,0,0,0.05)'}},
-        y1:{position:'right',min:0,max:50,ticks:{callback:function(v){return v+'%'}},grid:{display:false}},
-        x:{grid:{display:false}}
+        y:{ticks:{callback:function(v){var d=lang==='en'?v/cb():v;return sym()+Math.round(d/1000)+'k'},color:c.txt,font:{family:'Inter',size:10}},grid:{color:c.grid},border:{display:false}},
+        x:{ticks:{color:c.txt,font:{family:'Inter',size:10}},grid:{display:false},border:{display:false}}
       }
     }
   });
 }
 
-function buildResumo(){
-  var t=i18n[lang];
-  var tbody=document.getElementById('resumo-tbody');
-  tbody.innerHTML='';
-  resumoRows.forEach(function(row){
-    var tr=document.createElement('tr');
-    var c1=lang==='en'?(row.c1en||row.c1):row.c1;
-    var c2=lang==='en'?(row.c2en||row.c2):row.c2;
-    var c3=lang==='en'?(row.c3en||row.c3):row.c3;
-    function chip(val){
-      var yes=val==='SIM'||val==='YES';
-      var no=val==='NÃO'||val==='NO';
-      if(yes) return '<span style="background:#EAF3DE;color:#3B6D11;padding:2px 8px;border-radius:5px;font-size:11px;font-weight:600">'+(lang==='en'?'YES':'SIM')+'</span>';
-      if(no) return '<span style="background:#fce8e8;color:#A32D2D;padding:2px 8px;border-radius:5px;font-size:11px;font-weight:600">'+(lang==='en'?'NO':'NÃO')+'</span>';
-      return val;
-    }
-    tr.innerHTML='<td class="item-col">'+(lang==='en'?row.en:row.pt)+'</td><td class="center">'+chip(c1)+'</td><td class="center">'+chip(c2)+'</td><td class="center">'+chip(c3)+'</td>';
-    tbody.appendChild(tr);
-  });
-  // total row
-  var cambio=getCambio();
-  var gln=parseFloat(document.getElementById('inp-gln').value)||0;
-  var totals=[getTotal(0),getTotal(1),getTotal(2)].map(function(t){return Math.max(0,t-gln)});
-  var tr2=document.createElement('tr');
-  tr2.className='total-row';
-  var sym=lang==='en'?'$ ':'R$ ';
-  function disp(v){return sym+(lang==='en'?Math.round(v/cambio).toLocaleString('en-US'):Math.round(v).toLocaleString('pt-BR'))}
-  tr2.innerHTML='<td class="item-col">TOTAL</td><td class="center" style="font-size:14px">'+disp(totals[0])+'</td><td class="center" style="font-size:14px">'+disp(totals[1])+'</td><td class="center" style="font-size:14px">'+disp(totals[2])+'</td>';
-  tbody.appendChild(tr2);
-  document.getElementById('t-resumo-title').textContent=t.resumoTitle;
-  document.getElementById('rh-item').textContent=t.rhItem;
-  document.getElementById('rh-c1').textContent=t.rhC1;
-  document.getElementById('rh-c2').textContent=t.rhC2;
-  document.getElementById('rh-c3').textContent=t.rhC3;
+function refreshCharts(){
+  var t=T[lang], tix=tickets(), p=np(), c=cb();
+  var labels=[t.tag1,t.tag2,t.tag3];
+  var costs=[totAdj(0),totAdj(1),totAdj(2)];
+  /* profits in BRL then convert if EN */
+  var profitsBRL=costs.map(function(cost,i){return (tix[i]-cost/p)*p});
+  var dCosts=lang==='en'?costs.map(function(v){return Math.round(v/c)}):costs.map(Math.round);
+  var dProfits=lang==='en'?profitsBRL.map(function(v){return Math.round(v/c)}):profitsBRL.map(Math.round);
+  var col=gcol();
+
+  if(barChart){
+    barChart.data.labels=labels;
+    barChart.data.datasets[0].data=dCosts;
+    barChart.options.scales.y.ticks.callback=axK;
+    barChart.options.scales.y.grid.color=col.grid;
+    barChart.options.scales.y.ticks.color=col.txt;
+    barChart.options.scales.x.ticks.color=col.txt;
+    barChart.update();
+  }
+  if(profitChart){
+    profitChart.data.labels=labels;
+    profitChart.data.datasets[0].data=dProfits;
+    profitChart.data.datasets[0].backgroundColor=dProfits.map(function(v){return v>=0?'rgba(5,150,105,.75)':'rgba(185,28,28,.75)'});
+    profitChart.options.scales.y.ticks.callback=axK;
+    profitChart.options.scales.y.grid.color=col.grid;
+    profitChart.options.scales.y.ticks.color=col.txt;
+    profitChart.options.scales.x.ticks.color=col.txt;
+    profitChart.update();
+  }
+  if(histChart){
+    histChart.options.scales.y.ticks.color=col.txt;
+    histChart.options.scales.y.ticks.callback=function(v){var d=lang==='en'?v/cb():v;return sym()+Math.round(d/1000)+'k'};
+    histChart.options.scales.y.grid.color=col.grid;
+    histChart.options.scales.x.ticks.color=col.txt;
+    histChart.update();
+  }
 }
 
+/* ── RESUMO TABLE ── */
+function buildResumo(){
+  var t=T[lang], body=document.getElementById('rt-body');
+  body.innerHTML='';
+  ROWS.forEach(function(row){
+    var tr=document.createElement('tr');
+    var cells=row.c.map(function(v,i){
+      var actual=lang==='en'&&row.ec?row.ec[i]:v;
+      if(actual==='y') return '<td class="rt-c"><div class="rt-ico">'+YSVG+'</div></td>';
+      if(actual==='n') return '<td class="rt-c"><div class="rt-ico">'+NSVG+'</div></td>';
+      return '<td class="rt-c"><span class="rt-txt">'+actual+'</span></td>';
+    });
+    tr.innerHTML='<td class="rt-item">'+(lang==='en'?row.en:row.pt)+'</td>'+cells.join('');
+    body.appendChild(tr);
+  });
+  /* total row */
+  var tr2=document.createElement('tr'); tr2.className='rt-total';
+  tr2.innerHTML='<td class="rt-item" style="font-weight:600;color:var(--text)">TOTAL</td>'+
+    [0,1,2].map(function(i){return '<td class="rt-c"><span class="rt-total-val">'+fmtV(totAdj(i))+'</span></td>'}).join('');
+  body.appendChild(tr2);
+}
+
+/* ── DETAIL PANEL ── */
 function openDetail(s){
   currentScene=s;
   [0,1,2].forEach(function(i){document.getElementById('card-'+i).classList.toggle('active',i===s)});
-  var t=i18n[lang];
-  var names=[t.n1,t.n2,t.n3];
-  var tags=[t.tag1,t.tag2,t.tag3];
-  document.getElementById('detail-title').textContent=t.detpre+tags[s]+' — '+names[s];
+  var t=T[lang];
+  document.getElementById('det-title').textContent=t.detpre+[t.tag1,t.tag2,t.tag3][s]+' — '+[t.n1,t.n2,t.n3][s];
   document.getElementById('detail-panel').classList.add('open');
   renderDetail(s);
   document.getElementById('detail-panel').scrollIntoView({behavior:'smooth',block:'nearest'});
 }
-
 function closeDetail(){document.getElementById('detail-panel').classList.remove('open')}
 
 function renderDetail(s){
-  var part=getPart();
-  var cambio=getCambio();
-  var t=i18n[lang];
-  var sym=lang==='en'?'$ ':'R$ ';
-  var tbody=document.getElementById('detail-tbody');
-  tbody.innerHTML='';
-  var scData=editableData[s];
-  var grandTotal=0;
-
-  scData.cats.forEach(function(cat,ci){
-    var catRow=document.createElement('tr');
-    catRow.className='cat-row';
-    catRow.innerHTML='<td colspan="4">'+t.cats[ci]+'</td>';
-    tbody.appendChild(catRow);
-
+  var p=np(), c=cb(), t=T[lang], tix=tickets();
+  var body=document.getElementById('dt-body'); body.innerHTML='';
+  var grand=0;
+  ED[s].cats.forEach(function(cat,ci){
+    var hr=document.createElement('tr'); hr.className='cat-h';
+    hr.innerHTML='<td colspan="4">'+t.cats[ci]+'</td>'; body.appendChild(hr);
     var catSum=0;
-    cat.items.forEach(function(it,ii){
-      grandTotal+=it[2];
-      catSum+=it[2];
+    cat.i.forEach(function(it,ii){
+      grand+=it[2]; catSum+=it[2];
       var tr=document.createElement('tr');
-      var dispVal=lang==='en'?it[2]/cambio:it[2];
-      var dispUnit=lang==='en'?(it[2]/part)/cambio:it[2]/part;
-      var inp=document.createElement('input');
-      inp.type='number';inp.className='cell-edit';
-      inp.value=(lang==='en'?(it[2]/cambio).toFixed(2):it[2].toFixed(2));
-      inp.min=0;inp.step=0.01;
+      /* input always shows in display currency */
+      var dispVal=lang==='en'?it[2]/c:it[2];
+      var isTaxRow=(ci===TAX_CAT && ii===TAX_IDX);
+      var inp=document.createElement('input'); inp.type='number'; inp.className='edit';
+      inp.value=dispVal.toFixed(2); inp.min=0; inp.step=0.01;
+      if(isTaxRow){
+        inp.readOnly=true;
+        inp.title=lang==='en'?'Auto: ticket × participants × 5.93%':'Auto: ticket × participantes × 5,93%';
+        inp.style.color='var(--accent)';inp.style.cursor='default';
+      }
       (function(ci2,ii2,el){
         el.addEventListener('input',function(){
+          if(ci2===TAX_CAT && ii2===TAX_IDX) return; /* tax is read-only */
           var nv=parseFloat(el.value)||0;
-          editableData[s].cats[ci2].items[ii2][2]=lang==='en'?nv*cambio:nv;
-          recalc();buildResumo();
+          ED[s].cats[ci2].i[ii2][2]=lang==='en'?nv*c:nv;
+          recalc();
         });
       })(ci,ii,inp);
-      var tdInp=document.createElement('td');tdInp.className='num';tdInp.appendChild(inp);
-      tr.innerHTML='<td>'+it[0]+'</td><td style="color:#888;font-size:11px">'+it[1]+'</td>';
+      var tdInp=document.createElement('td'); tdInp.className='num'; tdInp.appendChild(inp);
+      var itemName=lang==='en'?(ITEM_EN[it[0]]||it[0]):it[0];
+      var execName=lang==='en'?(ITEM_EN[it[1]]||it[1]):it[1];
+      var itemLabel=itemName+(isTaxRow?(' <span style="font-size:9px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--accent);background:var(--accent-bg);padding:1px 5px;border-radius:4px">auto</span>'):'');
+      tr.innerHTML='<td>'+itemLabel+'</td><td style="color:var(--text3);font-size:11px">'+execName+'</td>';
       tr.appendChild(tdInp);
-      var tdUnit=document.createElement('td');
-      tdUnit.className='num';tdUnit.style.color='#aaa';tdUnit.style.fontSize='11px';
-      tdUnit.textContent=sym+dispUnit.toFixed(4);
-      tr.appendChild(tdUnit);
-      tbody.appendChild(tr);
+      var unitBRL=it[2]/p, unitDisp=lang==='en'?unitBRL/c:unitBRL;
+      var tdU=document.createElement('td'); tdU.className='num'; tdU.style.color='var(--text3)';
+      tdU.textContent=sym()+unitDisp.toFixed(4); tr.appendChild(tdU);
+      body.appendChild(tr);
     });
-
-    var catSumDisp=lang==='en'?catSum/cambio:catSum;
-    var catUnitDisp=lang==='en'?(catSum/part)/cambio:catSum/part;
-    var totRow=document.createElement('tr');
-    totRow.className='cat-total-row';
-    totRow.innerHTML='<td colspan="2" style="padding:5px 8px;font-style:italic">'+t.catTotals[ci]+'</td><td class="num" style="padding:5px 8px">'+sym+Math.round(catSumDisp).toLocaleString(lang==='en'?'en-US':'pt-BR')+'</td><td class="num" style="padding:5px 8px">'+sym+catUnitDisp.toFixed(2)+'</td>';
-    tbody.appendChild(totRow);
+    var catDisp=lang==='en'?catSum/c:catSum, catUDisp=lang==='en'?(catSum/p)/c:catSum/p;
+    var fr=document.createElement('tr'); fr.className='cat-f';
+    fr.innerHTML='<td colspan="2">'+t.catf[ci]+'</td><td class="num">'+sym()+Math.round(catDisp).toLocaleString(lc())+'</td><td class="num">'+sym()+catUDisp.toFixed(2)+'</td>';
+    body.appendChild(fr);
   });
 
-  var tickets=[
-    parseFloat(document.getElementById('inp-t1').value)||139,
-    parseFloat(document.getElementById('inp-t2').value)||90,
-    parseFloat(document.getElementById('inp-t3').value)||139
-  ];
-  var gln=parseFloat(document.getElementById('inp-gln').value)||0;
-  var totalAdj=Math.max(0,grandTotal-gln);
-  var unit=totalAdj/part;
-  var tick=lang==='en'?tickets[s]/cambio:tickets[s];
-  var unitDisp=lang==='en'?unit/cambio:unit;
-  var liq=tick-unitDisp;
-  var totalDisp=lang==='en'?totalAdj/cambio:totalAdj;
-
-  var sumEl=document.getElementById('detail-summary');
-  sumEl.innerHTML='';
-  var cards=[
-    {l:t.slbl[0],v:sym+Math.round(totalDisp).toLocaleString(lang==='en'?'en-US':'pt-BR')},
-    {l:t.slbl[1],v:sym+unitDisp.toFixed(2)},
-    {l:t.slbl[2],v:sym+tick.toFixed(2)},
-    {l:t.slbl[3],v:sym+liq.toFixed(2),cls:liq>=0?'pos':'neg'}
-  ];
-  cards.forEach(function(c){
-    var d=document.createElement('div');d.className='sum-card';
-    d.innerHTML='<div class="lbl">'+c.l+'</div><div class="val'+(c.cls?' '+c.cls:'')+'">'+c.v+'</div>';
-    sumEl.appendChild(d);
+  var brlCost=Math.max(0,grand-gln());
+  var unitBRL=brlCost/p;
+  var tickBRL=tix[s];
+  var profitBRL=tickBRL-unitBRL;
+  /* summary strip — all values react to ticket changes */
+  var strip=document.getElementById('det-sum'); strip.innerHTML='';
+  [
+    {l:t.sl[0], v:fmtV(brlCost)},
+    {l:t.sl[1], v:fmtU(unitBRL)},
+    {l:t.sl[2], v:fmtTick(tickBRL)},
+    {l:t.sl[3], v:fmtTick(profitBRL), cls:profitBRL>=0?'pos':'neg'}
+  ].forEach(function(card){
+    var d=document.createElement('div'); d.className='sum-tile';
+    d.innerHTML='<div class="lbl">'+card.l+'</div><div class="val'+(card.cls?' '+card.cls:'')+'">'+card.v+'</div>';
+    strip.appendChild(d);
   });
 }
 
+/* ── HIST SUMMARY ── */
+function buildHistSummary(){
+  var c2=cb();
+  var spTotal=HIST.sp.reduce(function(a,b){return a+b},0);
+  var totTotal=HIST.tot.reduce(function(a,b){return a+b},0);
+  var avgPct=((spTotal/totTotal)*100).toFixed(0);
+  var maxSP=Math.max.apply(null,HIST.sp);
+  var maxYear=HIST.y[HIST.sp.indexOf(maxSP)];
+
+  function fv(brl){var v=lang==='en'?brl/c2:brl;return sym()+(v>=1000000?(v/1000000).toFixed(1)+'M':Math.round(v/1000)+'k')}
+
+  var items=[
+    {l:lang==='en'?'Summit Premier total':'Summit Premier total',v:fv(spTotal)},
+    {l:lang==='en'?'Envisionar total revenue':'Receita total Envisionar',v:fv(totTotal)},
+    {l:lang==='en'?'Average share':'Proporção média',v:avgPct+'%'},
+    {l:lang==='en'?'Best year':'Melhor ano',v:maxYear+' — '+fv(maxSP)}
+  ];
+  var el=document.getElementById('hist-summary');
+  el.innerHTML='';
+  items.forEach(function(item){
+    var d=document.createElement('div');
+    d.className='sum-tile';
+    d.innerHTML='<div class="lbl">'+item.l+'</div><div class="val">'+item.v+'</div>';
+    el.appendChild(d);
+  });
+}
+
+/* ── TABS ── */
+function switchTab(id,btn){
+  document.querySelectorAll('.tab-pane').forEach(function(p){p.classList.remove('active')});
+  document.querySelectorAll('.tab-btn').forEach(function(b){b.classList.remove('active')});
+  document.getElementById('tab-'+id).classList.add('active');
+  btn.classList.add('active');
+}
+
+/* ── LANG / THEME ── */
+function applyLang(l){
+  var t=T[l];
+  document.getElementById('t-eyebrow').textContent=t.eyebrow;
+  document.getElementById('t-title').innerHTML=t.title;
+  document.getElementById('t-sub').textContent=t.sub;
+  document.getElementById('t-inputs-lbl').textContent=t.inputsLbl;
+  document.getElementById('t-sc-lbl').textContent=t.scLbl;
+  ['part','cambio'].forEach(function(k){document.getElementById('t-'+k).textContent=t[k]});
+  document.getElementById('t-t1').textContent=t.t1;
+  document.getElementById('t-t2').textContent=t.t2;
+  document.getElementById('t-t3').textContent=t.t3;
+  document.getElementById('t-tag1').textContent=t.tag1;
+  document.getElementById('t-tag2').textContent=t.tag2;
+  document.getElementById('t-tag3').textContent=t.tag3;
+  document.getElementById('t-n1').textContent=t.n1;
+  document.getElementById('t-n2').textContent=t.n2;
+  document.getElementById('t-n3').textContent=t.n3;
+  document.getElementById('t-unit').textContent=t.unit;
+  document.getElementById('t-tick').textContent=t.tick;
+  document.getElementById('t-liq').textContent=t.liq;
+  /* update all repeated labels across all 3 cards via classes */
+  document.querySelectorAll('.tx-unit').forEach(function(e){e.textContent=t.unit});
+  document.querySelectorAll('.tx-tick').forEach(function(e){e.textContent=t.tick});
+  document.querySelectorAll('.tx-liq').forEach(function(e){e.textContent=t.liq});
+  document.querySelectorAll('.tx-see').forEach(function(e){e.textContent=t.see});
+  document.getElementById('t-see').textContent=t.see;
+  document.getElementById('t-ch1').textContent=t.ch1;
+  document.getElementById('t-ch2').textContent=t.ch2;
+  document.getElementById('t-ch3').textContent=t.ch3;
+  document.getElementById('t-leg-sp').textContent=t.legsp;
+  document.getElementById('t-leg-tot').textContent=t.legtot;
+  document.getElementById('t-leg1').textContent=t.leg1;
+  document.getElementById('t-leg2').textContent=t.leg2;
+  document.getElementById('t-leg3').textContent=t.leg3;
+  document.getElementById('t-close').textContent=t.close;
+  document.getElementById('t-dh1').textContent=t.dh1;
+  document.getElementById('t-dh2').textContent=t.dh2;
+  document.getElementById('t-dh3').textContent=t.dh3;
+  document.getElementById('t-dh4').textContent=t.dh4;
+  document.getElementById('t-rt-ttl').textContent=t.rtttl;
+  t.rh.forEach(function(h,i){document.getElementById('rh'+i).textContent=h});
+  /* simulator */
+  document.getElementById('t-sim-title').textContent=t.simTitle;
+  document.getElementById('t-sim-fee').textContent=t.simFee;
+  document.getElementById('t-sim-rec-atual').textContent=t.simRecAtual;
+  document.getElementById('t-sim-rec-novo').textContent=t.simRecNovo;
+  document.getElementById('t-sim-gap').textContent=t.simGap;
+  document.getElementById('t-sim-sub').textContent=t.simSub;
+  document.getElementById('t-sim-note').textContent=t.simNote;
+  /* tabs & pauta */
+  document.getElementById('t-tab-pauta').textContent=t.tabPauta;
+  document.getElementById('t-tab-cenarios').textContent=t.tabCenarios;
+  document.getElementById('t-pauta-obj').textContent=t.pautaObj;
+  document.getElementById('t-pauta-disc').textContent=t.pautaDisc;
+  document.getElementById('t-notes-title').textContent=t.notesTitle;
+  document.getElementById('notes-text').placeholder=t.notesPlaceholder;
+  renderPauta();
+  if(document.getElementById('detail-panel').classList.contains('open')){
+    document.getElementById('det-title').textContent=t.detpre+[t.tag1,t.tag2,t.tag3][currentScene]+' — '+[t.n1,t.n2,t.n3][currentScene];
+  }
+}
 function setLang(l,btn){
   lang=l;
-  document.querySelectorAll('.lang-btn button').forEach(function(b){b.classList.remove('active')});
+  document.querySelectorAll('#lang-ctrl button').forEach(function(b){b.classList.remove('active')});
   btn.classList.add('active');
-  document.documentElement.lang=l==='pt'?'pt-BR':'en';
-  var t=i18n[l];
-  document.title=t.title;
-  ['title','sub','part','cambio'].forEach(function(k){document.getElementById('t-'+k).textContent=t[k]||''});
-  document.getElementById('t-ticket1').textContent=t.ticket1;
-  document.getElementById('t-ticket2').textContent=t.ticket2;
-  document.getElementById('t-ticket3').textContent=t.ticket3;
-  document.getElementById('t-sub-gln').textContent=t.subgln;
-  document.getElementById('t-tag1').textContent=t.tag1;document.getElementById('t-tag2').textContent=t.tag2;document.getElementById('t-tag3').textContent=t.tag3;
-  document.getElementById('t-n1').textContent=t.n1;document.getElementById('t-n2').textContent=t.n2;document.getElementById('t-n3').textContent=t.n3;
-  document.getElementById('t-unit').textContent=t.unit;document.getElementById('t-tick').textContent=t.tick;document.getElementById('t-liq').textContent=t.liq;
-  document.getElementById('t-see').textContent=t.see;
-  document.getElementById('t-chart1').textContent=t.chart1;document.getElementById('t-chart2').textContent=t.chart2;document.getElementById('t-chart3').textContent=t.chart3;
-  document.getElementById('t-leg-fat').textContent=t.legfat;document.getElementById('t-leg-pct').textContent=t.legpct;
-  document.getElementById('t-close').textContent=t.close;
-  document.getElementById('t-leg1').textContent=t.leg1;document.getElementById('t-leg2').textContent=t.leg2;document.getElementById('t-leg3').textContent=t.leg3;
-  document.getElementById('t-dh1').textContent=t.dh1;document.getElementById('t-dh2').textContent=t.dh2;document.getElementById('t-dh3').textContent=t.dh3;document.getElementById('t-dh4').textContent=t.dh4;
-  var labels=l==='pt'?['Cenário 1','Cenário 2','Cenário 3']:['Scenario 1','Scenario 2','Scenario 3'];
-  if(barChart){barChart.data.labels=labels;barChart.update();}
-  if(profitChart){profitChart.data.labels=labels;profitChart.update();}
-  if(document.getElementById('detail-panel').classList.contains('open')){
-    var tags=[t.tag1,t.tag2,t.tag3],names=[t.n1,t.n2,t.n3];
-    document.getElementById('detail-title').textContent=t.detpre+tags[currentScene]+' — '+names[currentScene];
-    renderDetail(currentScene);
-  }
-  buildResumo();
+  /* clear pauta cache so translated defaults render */
+  try{localStorage.removeItem('sp_objectives');localStorage.removeItem('sp_agenda')}catch(e){}
+  applyLang(l);
   recalc();
 }
+function setTheme(th,btn){
+  document.documentElement.setAttribute('data-theme',th);
+  document.querySelectorAll('#theme-ctrl button').forEach(function(b){b.classList.remove('active')});
+  btn.classList.add('active');
+  recalc();
+  if(histChart)histChart.update();
+}
 
+
+/* ── PAUTA DATA & RENDER ── */
+var OBJECTIVES=[
+  {pt:'Alinhar com a GLN os objetivos de influência até 2030 (potencial x metas e alvos) - método SES',en:'Align with GLN the influence goals through 2030 (potential x targets and goals) - SES method'},
+  {pt:'Definir as estratégias para ampliar o alcance do Summit no Brasil (perfil, região, tamanho de igreja)',en:'Define strategies to expand the Summit\'s reach in Brazil (profile, region, church size)'},
+  {pt:'Quais as alavancas de crescimento que adotaremos',en:'Which growth levers will we adopt'}
+];
+var AGENDA=[
+  {day:{pt:'Segunda 22/06 — Manhã',en:'Monday 06/22 — Morning'},items:[
+    {pt:'Mercado Brasil',en:'Brazil Market'},
+    {pt:'Envisionar autoridade Igreja Brasileira (dados)',en:'Envisionar authority in the Brazilian Church (data)'}
+  ]},
+  {day:{pt:'Segunda 22/06 — Tarde',en:'Monday 06/22 — Afternoon'},items:[
+    {pt:'GLN e a visão de futuro do Summit',en:'GLN and the future vision for the Summit'},
+    {pt:'Apresentação da proposta Summit 2030',en:'Summit 2030 proposal presentation'}
+  ]},
+  {day:{pt:'Terça 23/06 — Manhã',en:'Tuesday 06/23 — Morning'},items:[
+    {pt:'03 cenários detalhados (subsídio)',en:'03 detailed scenarios (subsidy)'}
+  ]},
+  {day:{pt:'Terça 23/06 — Tarde',en:'Tuesday 06/23 — Afternoon'},items:[
+    {pt:'Direitos de uso do conteúdo p/ novos modelos de Summit',en:'Content usage rights for new Summit models'},
+    {pt:'Exclusividade da venda Summit Chicago (apenas via Envisionar) + cadeiras (200)',en:'Exclusive Chicago Summit sales (Envisionar only) + seats (200)'},
+    {pt:'Resumo e Definições do dia',en:'Summary and Decisions of the day'}
+  ]},
+  {day:{pt:'Quarta 24/06 — Manhã',en:'Wednesday 06/24 — Morning'},items:[
+    {pt:'Livre para assuntos que ficaram pendentes',en:'Open for pending matters'}
+  ]}
+];
+function savePauta(){
+  try{
+    var objUl=document.querySelector('#tab-pauta .pauta-card:first-child ul');
+    if(objUl){
+      var objs=[];
+      objUl.querySelectorAll('li').forEach(function(li){objs.push(li.textContent)});
+      localStorage.setItem('sp_objectives',JSON.stringify(objs));
+    }
+    var agendaCard=document.querySelector('#tab-pauta .pauta-card:nth-child(2)');
+    if(agendaCard){
+      var days=[];
+      var currentDay=null;
+      agendaCard.querySelectorAll('.pauta-day, li').forEach(function(el){
+        if(el.classList.contains('pauta-day')){
+          currentDay={day:el.textContent,items:[]};
+          days.push(currentDay);
+        } else if(currentDay){
+          currentDay.items.push(el.textContent);
+        }
+      });
+      localStorage.setItem('sp_agenda',JSON.stringify(days));
+    }
+    var notes=document.getElementById('notes-text');
+    if(notes) localStorage.setItem('sp_notes',notes.value);
+  }catch(e){}
+}
+function loadPauta(){
+  try{
+    var saved=localStorage.getItem('sp_objectives');
+    if(saved){
+      var objs=JSON.parse(saved);
+      var objUl=document.querySelector('#tab-pauta .pauta-card:first-child ul');
+      if(objUl){
+        objUl.innerHTML='';
+        objs.forEach(function(txt){
+          var li=document.createElement('li');
+          li.contentEditable='true';
+          li.textContent=txt;
+          li.addEventListener('input',savePauta);
+          objUl.appendChild(li);
+        });
+        return true;
+      }
+    }
+  }catch(e){}
+  return false;
+}
+function loadAgenda(){
+  try{
+    var saved=localStorage.getItem('sp_agenda');
+    if(saved){
+      var days=JSON.parse(saved);
+      var agendaCard=document.querySelector('#tab-pauta .pauta-card:nth-child(2)');
+      if(agendaCard){
+        var h3=agendaCard.querySelector('h3');
+        agendaCard.innerHTML='';
+        agendaCard.appendChild(h3);
+        days.forEach(function(block){
+          var dayDiv=document.createElement('div');
+          dayDiv.className='pauta-day';
+          dayDiv.textContent=block.day;
+          agendaCard.appendChild(dayDiv);
+          var ul=document.createElement('ul');
+          block.items.forEach(function(txt){
+            var li=document.createElement('li');
+            li.contentEditable='true';
+            li.textContent=txt;
+            li.addEventListener('input',savePauta);
+            ul.appendChild(li);
+          });
+          agendaCard.appendChild(ul);
+        });
+        return true;
+      }
+    }
+  }catch(e){}
+  return false;
+}
+function addItemTo(ul){
+  var li=document.createElement('li');
+  li.contentEditable='true';
+  li.textContent=lang==='en'?'New item':'Novo item';
+  li.addEventListener('input',savePauta);
+  ul.appendChild(li);
+  li.focus();
+  /* select all text for easy replacement */
+  var range=document.createRange();
+  range.selectNodeContents(li);
+  var sel=window.getSelection();
+  sel.removeAllRanges();
+  sel.addRange(range);
+  savePauta();
+}
+function addBtn(parent,targetUl){
+  var btn=document.createElement('button');
+  btn.className='add-item';
+  btn.innerHTML='+ '+(lang==='en'?'Add item':'Adicionar item');
+  btn.addEventListener('click',function(){addItemTo(targetUl)});
+  parent.appendChild(btn);
+}
+function renderPauta(){
+  var l=lang;
+  var objLoaded=loadPauta();
+  var agLoaded=loadAgenda();
+  
+  if(!objLoaded){
+    var objUl=document.querySelector('#tab-pauta .pauta-card:first-child ul');
+    if(objUl){
+      objUl.innerHTML='';
+      OBJECTIVES.forEach(function(o){
+        var li=document.createElement('li');
+        li.contentEditable='true';
+        li.textContent=o[l];
+        li.addEventListener('input',savePauta);
+        objUl.appendChild(li);
+      });
+    }
+  }
+  /* Add button for objectives */
+  var objCard=document.querySelector('#tab-pauta .pauta-card:first-child');
+  if(objCard){
+    var oldBtn=objCard.querySelector('.add-item');
+    if(oldBtn)oldBtn.remove();
+    addBtn(objCard,objCard.querySelector('ul'));
+  }
+
+  if(!agLoaded){
+    var agendaCard=document.querySelector('#tab-pauta .pauta-card:nth-child(2)');
+    if(agendaCard){
+      var h3=agendaCard.querySelector('h3');
+      agendaCard.innerHTML='';
+      agendaCard.appendChild(h3);
+      AGENDA.forEach(function(block){
+        var dayDiv=document.createElement('div');
+        dayDiv.className='pauta-day';
+        dayDiv.textContent=block.day[l];
+        agendaCard.appendChild(dayDiv);
+        var ul=document.createElement('ul');
+        block.items.forEach(function(item){
+          var li=document.createElement('li');
+          li.contentEditable='true';
+          li.textContent=item[l];
+          li.addEventListener('input',savePauta);
+          ul.appendChild(li);
+        });
+        agendaCard.appendChild(ul);
+      });
+    }
+  }
+  /* Add buttons for each agenda day */
+  var agCard=document.querySelector('#tab-pauta .pauta-card:nth-child(2)');
+  if(agCard){
+    agCard.querySelectorAll('.add-item').forEach(function(b){b.remove()});
+    agCard.querySelectorAll('ul').forEach(function(ul){
+      addBtn(ul.parentNode,ul);
+      /* move button after the ul */
+      ul.parentNode.insertBefore(ul.parentNode.lastChild,ul.nextSibling);
+    });
+  }
+
+  /* Notes */
+  var notes=document.getElementById('notes-text');
+  if(notes){
+    try{
+      var savedNotes=localStorage.getItem('sp_notes');
+      if(savedNotes!==null) notes.value=savedNotes;
+    }catch(e){}
+    notes.removeEventListener('input',savePauta);
+    notes.addEventListener('input',savePauta);
+  }
+}
 window.addEventListener('load',function(){
+  renderPauta();
   initCharts();
-  buildResumo();
   recalc();
   openDetail(0);
 });
